@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>Feluda Care Agent — brag</title>
+<script src="assets/js/gsap.min.js"></script>
+<script src="assets/js/audio-data.js"></script>
+<style>
+@font-face{font-family:"Plus Jakarta Sans";src:url("assets/fonts/PlusJakartaSans.woff2") format("woff2");font-weight:200 800;font-style:normal;font-display:block}
+@font-face{font-family:"JetBrains Mono";src:url("assets/fonts/JetBrainsMono.woff2") format("woff2");font-weight:100 800;font-style:normal;font-display:block}
+:root{
+  --primary:#0064e0;--primary-deep:#0457cb;--canvas:#fff;--soft:#f1f4f7;--hair:#dee3e9;--hair2:#ced0d4;
+  --ink:#0a1317;--ink2:#1c1e21;--steel:#5d6c7b;
+  --ok:#24823c;--ok-bg:#e9f6ec;--bad:#c4122f;--bad-bg:#fdecef;--warn-bg:#fff4dc;--warn:#8a5a00;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--canvas);color:var(--ink);font-family:"Plus Jakarta Sans",sans-serif;-webkit-font-smoothing:antialiased}
+#root{position:relative;width:100%;height:100%;overflow:hidden;background:var(--canvas)}
+.mono{font-family:"JetBrains Mono",monospace}
+#glow{position:absolute;left:50%;top:50%;width:1500px;height:900px;margin:-450px 0 0 -750px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(0,100,224,.16),rgba(0,145,255,.06) 55%,rgba(255,255,255,0) 100%);opacity:.5}
+.clip{position:absolute;inset:0}
+.stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.brandbar{position:absolute;left:72px;top:56px;display:flex;align-items:center;gap:14px;font-weight:800;font-size:28px;letter-spacing:-.4px;color:var(--ink)}
+.mark{width:44px;height:44px;border-radius:9999px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800}
+.panel{background:#fff;border:1px solid var(--hair);border-radius:28px;box-shadow:0 24px 60px rgba(10,19,23,.08)}
+.eyebrow{font-size:28px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--steel)}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:100px;font-size:28px;font-weight:700;line-height:1}
+.badge.ok{background:var(--ok);color:#fff}
+.badge.bad{background:var(--bad);color:#fff}
+.badge.busy{background:var(--primary);color:#fff}
+.badge.neutral{background:var(--soft);color:var(--ink2);border:1px solid var(--hair2)}
+
+/* scene 1 */
+#s1 .wrap{display:flex;flex-direction:column;align-items:center;gap:56px}
+.chat{display:flex;align-items:flex-end;gap:20px}
+.avatar{width:72px;height:72px;border-radius:9999px;background:var(--soft);border:1px solid var(--hair);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:26px;color:var(--ink)}
+.bubble{background:var(--soft);border-radius:32px 32px 32px 8px;padding:30px 40px;min-width:900px}
+.bubble .who{font-size:28px;font-weight:700;color:var(--steel);margin-bottom:8px}
+.bubble .msg{font-size:46px;font-weight:500;letter-spacing:-.6px;color:var(--ink);white-space:nowrap}
+.bubble .msg span{opacity:0}
+.hook{font-size:120px;font-weight:800;letter-spacing:-3px;color:var(--ink);line-height:1}
+.hook em{font-style:normal;color:var(--primary)}
+
+/* scene 2 */
+#s2 .wrap{display:flex;align-items:center;gap:56px}
+.req{width:780px;padding:44px 48px}
+.req .quote{font-size:44px;font-weight:500;line-height:1.3;letter-spacing:-.6px;margin:20px 0 24px;color:var(--ink)}
+.req .quote b{color:var(--primary-deep);font-weight:700;white-space:nowrap}
+.req .from{font-size:28px;color:var(--steel);font-weight:600}
+.arrow{width:80px;height:6px;background:var(--hair2);border-radius:3px;position:relative}
+.arrow:after{content:"";position:absolute;right:-4px;top:-9px;border-left:18px solid var(--hair2);border-top:12px solid transparent;border-bottom:12px solid transparent}
+.jobs{display:flex;flex-direction:column;gap:24px;width:740px}
+.jobs .eyebrow{color:var(--primary-deep)}
+.job{padding:30px 36px;display:flex;flex-direction:column;gap:12px}
+.job .t{display:flex;align-items:center;gap:16px;font-size:36px;font-weight:700;letter-spacing:-.4px}
+.job .n{width:44px;height:44px;border-radius:12px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800}
+.job .chg{font-size:30px;color:var(--ink2)}
+.job .chg .old{color:var(--steel)}
+
+/* scene 3 */
+#s3 .wrap{display:flex;gap:48px;align-items:stretch}
+.builder{width:700px;padding:44px 48px;display:flex;flex-direction:column;gap:22px}
+.builder h2{margin:0;font-size:48px;font-weight:600;letter-spacing:-.8px;line-height:1.15}
+.builder .meta{font-size:28px;color:var(--steel)}
+.btn{align-self:flex-start;background:var(--primary);color:#fff;border-radius:100px;padding:24px 56px;font-size:34px;font-weight:700;margin-top:8px}
+.status{display:flex;align-items:center;gap:16px;font-size:28px;color:var(--ink2)}
+.verdicts{width:860px;display:flex;flex-direction:column;gap:24px;justify-content:center}
+.vrow{padding:28px 32px;display:flex;flex-direction:column;gap:16px}
+.vrow .top{display:flex;align-items:center;justify-content:space-between}
+.vrow .name{font-size:32px;font-weight:700}
+.crop{display:flex;align-items:center;justify-content:space-between;border-radius:16px;padding:18px 26px;font-size:30px;border:2px solid var(--hair)}
+.crop .lbl{font-size:28px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--steel)}
+.vrow.pass .crop{border-color:#9ccfa8;background:var(--ok-bg)}
+.vrow.fail{border:2px solid var(--bad)}
+.vrow.fail .crop{border-color:#f0a3b0;background:var(--bad-bg)}
+.reason{font-size:30px;color:var(--bad);font-weight:600}
+.cursor{position:absolute;left:0;top:0;width:48px;height:48px}
+
+/* scene 4 */
+#s4 .wrap{width:1300px;display:flex;flex-direction:column;gap:26px}
+.banner{border-radius:20px;padding:24px 32px;font-size:32px;font-weight:700;display:flex;align-items:center;gap:18px}
+.banner.block{background:var(--bad-bg);color:var(--bad);border:1px solid #f0a3b0}
+.fixrow{padding:24px 32px;display:flex;align-items:center;justify-content:space-between;font-size:30px;font-weight:600}
+.closed{padding:36px 44px;display:flex;flex-direction:column;gap:18px;border:2px solid var(--ok)}
+.closed .head{display:flex;align-items:center;gap:18px;font-size:42px;font-weight:700;color:var(--ok);letter-spacing:-.5px}
+.closed .note{font-size:32px;line-height:1.4;color:var(--ink2);background:var(--soft);border-radius:16px;padding:22px 28px}
+
+/* scene 5 */
+#s5 .wrap{display:flex;flex-direction:column;align-items:center;gap:30px}
+.logo{display:flex;align-items:center;gap:30px}
+.logo .mark{width:132px;height:132px;font-size:64px}
+.logo .word{font-size:150px;font-weight:800;letter-spacing:-4px;line-height:1}
+.tag{font-size:64px;font-weight:500;letter-spacing:-1.2px;color:var(--ink)}
+.tag em{font-style:normal;color:var(--primary)}
+.built{font-size:28px;color:var(--steel);font-weight:600}
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-width="1920" data-height="1080" data-duration="24.8">
+  <div id="glow"></div>
+
+  <!-- Scene 1: hook -->
+  <section id="s1" class="clip" data-start="0" data-duration="3.4" data-track-index="1">
+    <div class="stage"><div class="wrap" id="s1w">
+      <div class="chat" id="chat">
+        <div class="avatar" data-layout-ignore>B</div>
+        <div class="bubble"><div class="who">Builder</div><div class="msg" id="msg"></div></div>
+      </div>
+      <div class="hook" id="hook">Feluda <em>checks.</em></div>
+    </div></div>
+  </section>
+
+  <!-- Scene 2: request becomes jobs -->
+  <section id="s2" class="clip" data-start="3.4" data-duration="5.8" data-track-index="1">
+    <div class="brandbar"><div class="mark" data-layout-ignore>F</div>Feluda</div>
+    <div class="stage"><div class="wrap" id="s2w">
+      <div class="panel req" id="req">
+        <div class="eyebrow">Customer request · Bright Smile Dental</div>
+        <div class="quote">“Our phone changed to <b>(555) 201-9900</b>. Please update the header and the footer.”</div>
+        <div class="from">— Priya</div>
+      </div>
+      <div class="arrow" id="arr"></div>
+      <div class="jobs">
+        <div class="eyebrow" id="planned">Planned by Muse Spark · 2 jobs</div>
+        <div class="panel job" id="job1"><div class="t"><div class="n" data-layout-ignore>1</div>Update phone in header</div><div class="chg mono"><span class="old">(555) 201-4410</span> → (555) 201-9900</div></div>
+        <div class="panel job" id="job2"><div class="t"><div class="n" data-layout-ignore>2</div>Update phone in footer</div><div class="chg mono"><span class="old">(555) 201-4410</span> → (555) 201-9900</div></div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- Scene 3: mark done -> verdicts -->
+  <section id="s3" class="clip" data-start="9.2" data-duration="7.4" data-track-index="1">
+    <div class="brandbar"><div class="mark" data-layout-ignore>F</div>Feluda</div>
+    <div class="stage"><div class="wrap" id="s3w">
+      <div class="panel builder" id="builder">
+        <div class="eyebrow">Builder · 2 jobs</div>
+        <h2>Update the clinic phone number</h2>
+        <div class="meta">Recipe steps complete on the live site.</div>
+        <div class="btn" id="btn">Mark done</div>
+        <div class="status" id="status"><span class="badge busy">Verifying</span>Capturing desktop + mobile</div>
+      </div>
+      <div class="verdicts">
+        <div class="panel vrow pass" id="v1">
+          <div class="top"><div class="name">Header phone</div><span class="badge ok">✓ Passed</span></div>
+          <div class="crop"><span class="lbl">After</span><span class="mono">(555) 201-9900</span></div>
+        </div>
+        <div class="panel vrow fail" id="v2">
+          <div class="top"><div class="name">Footer phone</div><span class="badge bad">✕ Failed</span></div>
+          <div class="crop"><span class="lbl">After</span><span class="mono">(555) 201-4410</span></div>
+          <div class="reason">Footer still shows the old number.</div>
+        </div>
+      </div>
+    </div></div>
+    <svg class="cursor" id="cursor" viewBox="0 0 24 24"><path d="M4 2l15 11-6.5 1.2L16 21l-3 1.4-3.4-6.8L4 20z" fill="#0a1317" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/></svg>
+  </section>
+
+  <!-- Scene 4: blocked, fixed, closed -->
+  <section id="s4" class="clip" data-start="16.6" data-duration="4.7" data-track-index="1">
+    <div class="brandbar"><div class="mark" data-layout-ignore>F</div>Feluda</div>
+    <div class="stage"><div class="wrap" id="s4w">
+      <div class="banner block" id="blocked">Closure blocked — 1 job failed</div>
+      <div class="panel fixrow" id="fixed"><span>Footer phone · fixed and re-verified</span><span class="badge ok">✓ Passed</span></div>
+      <div class="panel closed" id="closed">
+        <div class="head">✓ Request closed · final consistency gate passed</div>
+        <div class="note">“Hi Priya — (555) 201-9900 is live.”</div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- Scene 5: outro -->
+  <section id="s5" class="clip" data-start="21.3" data-duration="3.5" data-track-index="1">
+    <div class="stage"><div class="wrap">
+      <div class="logo" id="logo"><div class="mark">F</div><div class="word">Feluda</div></div>
+      <div class="tag" id="tag">Done means <em>verified.</em></div>
+      <div class="built" id="built">Built on Meta Muse Spark · SAM 3.1</div>
+    </div></div>
+  </section>
+
+  <!-- Audio -->
+  <audio id="vo1" data-start="0.3" data-duration="1.66" data-track-index="3" data-volume="1" src="assets/vo/vo1.wav"></audio>
+  <audio id="vo2" data-start="3.5" data-duration="5.48" data-track-index="3" data-volume="1" src="assets/vo/vo2.wav"></audio>
+  <audio id="vo3" data-start="9.35" data-duration="6.61" data-track-index="3" data-volume="1" src="assets/vo/vo3.wav"></audio>
+  <audio id="vo4" data-start="16.75" data-duration="2.6" data-track-index="3" data-volume="1" src="assets/vo/vo4.wav"></audio>
+  <audio id="vo5" data-start="21.5" data-duration="1.86" data-track-index="3" data-volume="1" src="assets/vo/vo5.wav"></audio>
+  <audio id="bg-music" data-start="0" data-duration="24.8" data-track-index="10" data-volume="1" data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0},{"t":0.4,"v":0.14},{"t":19.3,"v":0.14},{"t":19.8,"v":0.26},{"t":21.2,"v":0.26},{"t":21.5,"v":0.14},{"t":23.5,"v":0.14},{"t":24.0,"v":0.26},{"t":24.8,"v":0}]}]}' src="assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3"></audio>
+  <audio id="k1" data-start="0.35" data-duration="0.3" data-track-index="11" data-volume="0.2" src="assets/sfx/keyboard/keypress-001.wav"></audio>
+  <audio id="k2" data-start="0.65" data-duration="0.3" data-track-index="12" data-volume="0.2" src="assets/sfx/keyboard/keypress-003.wav"></audio>
+  <audio id="k3" data-start="0.95" data-duration="0.3" data-track-index="13" data-volume="0.2" src="assets/sfx/keyboard/keypress-005.wav"></audio>
+  <audio id="k4" data-start="1.25" data-duration="0.3" data-track-index="14" data-volume="0.2" src="assets/sfx/keyboard/keypress-007.wav"></audio>
+  <audio id="k5" data-start="1.55" data-duration="0.3" data-track-index="15" data-volume="0.2" src="assets/sfx/keyboard/keypress-009.wav"></audio>
+  <audio id="sx-hook" data-start="1.95" data-duration="0.18" data-track-index="16" data-volume="0.6" src="assets/sfx/impact/impactSoft_medium_001.ogg"></audio>
+  <audio id="sx-req" data-start="3.5" data-duration="0.6" data-track-index="17" data-volume="0.45" src="assets/sfx/casino/card-slide-1.ogg"></audio>
+  <audio id="sx-job1" data-start="4.88" data-duration="0.6" data-track-index="18" data-volume="0.5" src="assets/sfx/casino/card-slide-1.ogg"></audio>
+  <audio id="sx-job2" data-start="5.31" data-duration="0.6" data-track-index="19" data-volume="0.5" src="assets/sfx/casino/card-slide-1.ogg"></audio>
+  <audio id="sx-click" data-start="9.98" data-duration="0.05" data-track-index="20" data-volume="0.8" src="assets/sfx/interface/click_003.ogg"></audio>
+  <audio id="sx-pass" data-start="13.08" data-duration="0.19" data-track-index="21" data-volume="0.55" src="assets/sfx/interface/drop_002.ogg"></audio>
+  <audio id="sx-fail" data-start="14.2" data-duration="0.5" data-track-index="22" data-volume="0.4" src="assets/sfx/interface/error_006.ogg"></audio>
+  <audio id="sx-fixed" data-start="17.47" data-duration="0.19" data-track-index="23" data-volume="0.5" src="assets/sfx/interface/drop_002.ogg"></audio>
+  <audio id="sx-closed" data-start="18.53" data-duration="1.48" data-track-index="24" data-volume="0.5" src="assets/sfx/impact/impactBell_heavy_000.ogg"></audio>
+  <audio id="sx-logo" data-start="21.37" data-duration="0.18" data-track-index="25" data-volume="0.6" src="assets/sfx/impact/impactSoft_medium_001.ogg"></audio>
+</div>
+
+<script>
+(function(){
+  // typed message: build spans once, deterministically
+  var text = "Phone number updated. Marking done ✓";
+  var msg = document.getElementById("msg");
+  for (var i = 0; i < text.length; i++) {
+    var s = document.createElement("span");
+    s.textContent = text[i];
+    msg.appendChild(s);
+  }
+  var chars = msg.querySelectorAll("span");
+  var tl = gsap.timeline({ paused: true });
+  var E = "power3.out";
+
+  // ---- Scene 1: hook (0 - 3.4)
+  
+  for (var c = 0; c < chars.length; c++) tl.set(chars[c], { opacity: 1 }, 0.3 + c * 0.036);
+  tl.fromTo("#hook", { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: E }, 2.0);
+  tl.to("#s1w", { opacity: 0, y: -20, duration: 0.3, ease: "power2.in" }, 3.1);
+
+  // ---- Scene 2: request -> jobs (3.4 - 7.8)
+  tl.fromTo("#req", { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: E }, 3.5);
+  tl.fromTo("#arr", { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.4, ease: E, transformOrigin: "left center" }, 4.4);
+  tl.fromTo("#planned", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 4.6);
+  // beat-grid: job 1 at 4.91s, job 2 at 5.34s (consecutive beats; both then hold 2.3s+)
+  tl.fromTo("#job1", { x: 60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.45, ease: E }, 4.91);
+  tl.fromTo("#job2", { x: 60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.45, ease: E }, 5.34);
+  tl.to("#s2w", { opacity: 0, x: -40, duration: 0.25, ease: "power2.in" }, 8.95);
+
+  // ---- Scene 3: mark done -> verdicts (7.8 - 14.8)
+  tl.fromTo("#builder", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: E }, 9.25);
+  tl.set("#status", { opacity: 0 }, 9.2);
+  tl.set(["#v1", "#v2"], { opacity: 0 }, 9.2);
+  tl.fromTo("#cursor", { x: 1300, y: 900, opacity: 0 }, { x: 560, y: 640, opacity: 1, duration: 0.6, ease: "power2.inOut" }, 9.35);
+  // Mark done click on the narration's "Mark done" (VO3 starts 9.35s)
+  tl.to("#btn", { scale: 0.94, duration: 0.08, ease: "power1.out" }, 10.0);
+  tl.to("#btn", { scale: 1, duration: 0.18, ease: "back.out(3)" }, 10.08);
+  tl.to("#btn", { backgroundColor: "#5d6c7b", duration: 0.2 }, 10.16);
+  tl.to("#cursor", { opacity: 0, duration: 0.3 }, 10.6);
+  tl.fromTo("#status", { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: E }, 10.2);
+  // beat-locked: 13.11s — header verdict, also on "The header's right"
+  tl.fromTo("#v1", { x: 60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.45, ease: E }, 13.11);
+  tl.fromTo("#v2", { x: 60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.45, ease: E }, 14.22);
+  tl.fromTo("#v2", { scale: 1 }, { scale: 1.025, duration: 0.15, yoyo: true, repeat: 1, ease: "power1.inOut" }, 14.95);
+  tl.to("#s3w", { opacity: 0, duration: 0.3, ease: "power2.in" }, 16.3);
+
+  // ---- Scene 4: blocked -> fixed -> closed (14.8 - 19.5)
+  tl.fromTo("#blocked", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: E }, 16.75);
+  tl.fromTo("#fixed", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: E }, 17.5);
+  // beat-locked: 18.56s — request closed
+  tl.to("#blocked", { opacity: 0.35, duration: 0.4 }, 18.56);
+  tl.fromTo("#closed", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: E }, 18.56);
+  tl.to("#s4w", { opacity: 0, duration: 0.3, ease: "power2.in" }, 21.0);
+
+  // ---- Scene 5: outro (19.5 - 23)
+  // wordmark lands with VO5 "Feluda"; tagline near strong cue 22.37s on "Done means verified"
+  tl.fromTo("#logo", { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.6)" }, 21.4);
+  tl.fromTo("#tag", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: E }, 22.24);
+  tl.fromTo("#built", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 22.5);
+
+  // ---- music fades (volume tweened on the audio element's data-volume is owned by the mixer; fade via glow only)
+  // ---- audio-reactive: background glow breathes with music low-band energy (pre-extracted, 15fps)
+  var A = window.AUDIO_ENERGY, glow = document.getElementById("glow");
+  for (var f = 0; f < A.values.length; f++) {
+    tl.call((function (v) { return function () {
+      glow.style.opacity = (0.35 + 0.55 * v).toFixed(3);
+      glow.style.transform = "scale(" + (1 + 0.1 * v).toFixed(4) + ")";
+    }; })(A.values[f]), [], f / A.fps);
+  }
+  tl.to({}, { duration: 0.01 }, 24.79);
+
+  window.__timelines["main"] = tl;
+})();
+</script>
+</body>
+</html>

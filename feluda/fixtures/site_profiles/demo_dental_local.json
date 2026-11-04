@@ -1,0 +1,266 @@
+{
+  "id": "demo_dental_local",
+  "name": "Bright Smile Dental (local demo WordPress fixture)",
+  "origins": [
+    "http://localhost:8100",
+    "http://127.0.0.1:8100"
+  ],
+  "admin_url": "http://localhost:8100/wp-admin/",
+  "theme": "Twenty Twenty-Four (block theme), simulated",
+  "editor": "Site Editor (template parts) and page editor, simulated",
+  "plugins": [
+    "simulated page cache (Settings › Cache)",
+    "simulated contact form with test inbox"
+  ],
+  "validated_at": "2026-10-30",
+  "dynamic_masks": [
+    "[data-dynamic]"
+  ],
+  "recipes": [
+    {
+      "recipe_id": "demo.header_phone",
+      "version": 1,
+      "job_types": [
+        "text_update",
+        "link_button_change"
+      ],
+      "region": "banner",
+      "element": "phone link in the shared Header template part",
+      "title": "Change the header phone link (text and tel: link)",
+      "steps": [
+        "Open {admin_url} and sign in with your builder account. In the left menu select Appearance > Editor.",
+        "Under Editor › Patterns › Template parts, select Header. Confirm the field labelled Phone link text currently shows {current_text}, matching the reviewed before-crop; if it differs, stop and ask the Care lead for review.",
+        "Click into the field labelled Phone link text, select all of its text and replace it with exactly: {new_text}",
+        "Click into the field labelled Phone link URL, select all of its text and replace it with exactly: {new_href}",
+        "Select Save and wait for the green notice \"Header template part updated.\". Then open Settings › Cache; if the page cache is shown as enabled, select Purge all caches and wait for \"All caches purged.\".",
+        "Open {page_urls} at {viewports} widths. Confirm the header phone shows {new_text} and links to {new_href}, then return to the Feluda job card and select Mark done."
+      ],
+      "validation_status": "validated",
+      "validation_date": "2026-10-30",
+      "validated_by": "Feluda build team on the local demo fixture",
+      "source_hash": "b8f39a44731cf61a8c78007d28d1f79e9c072a6697371e2c4f836382a5338189"
+    },
+    {
+      "recipe_id": "demo.footer_phone",
+      "version": 1,
+      "job_types": [
+        "text_update",
+        "link_button_change"
+      ],
+      "region": "contentinfo",
+      "element": "phone link in the shared Footer template part",
+      "title": "Change the footer phone link (text and tel: link)",
+      "steps": [
+        "Open {admin_url} and sign in with your builder account. In the left menu select Appearance > Editor.",
+        "Under Editor › Patterns › Template parts, select Footer. Confirm the field labelled Phone link text currently shows {current_text}, matching the reviewed before-crop; if it differs, stop and ask the Care lead for review.",
+        "Click into the field labelled Phone link text, select all of its text and replace it with exactly: {new_text}",
+        "Click into the field labelled Phone link URL, select all of its text and replace it with exactly: {new_href}",
+        "Select Save and wait for the green notice \"Footer template part updated.\". Then open Settings › Cache; if the page cache is shown as enabled, select Purge all caches and wait for \"All caches purged.\".",
+        "Open {page_urls} at {viewports} widths. Confirm the footer phone shows {new_text} and links to {new_href}, then return to the Feluda job card and select Mark done."
+      ],
+      "validation_status": "validated",
+      "validation_date": "2026-10-30",
+      "validated_by": "Feluda build team on the local demo fixture",
+      "source_hash": "cae3240de6ce3639777155de8718c5b75d5207e6f18e1799af65f37eaa77db01"
+    },
+    {
+      "recipe_id": "demo.footer_email",
+      "version": 1,
+      "job_types": [
+        "text_update",
+        "link_button_change"
+      ],
+      "region": "contentinfo",
+      "element": "email link in the shared Footer template part",
+      "title": "Change the footer email link (text and mailto: link)",
+      "steps": [
+        "Open {admin_url} and sign in with your builder account. In the left menu select Appearance > Editor.",
+        "Under Editor › Patterns › Template parts, select Footer. Confirm the field labelled Email link text currently shows {current_text}, matching the reviewed before-crop; if it differs, stop and ask the Care lead for review.",
+        "Click into the field labelled Email link text, select all of its text and replace it with exactly: {new_text}",
+        "Click into the field labelled Email link URL, select all of its text and replace it with exactly: {new_href}",
+        "Select Save and wait for the green notice \"Footer template part updated.\". Then open Settings › Cache; if the page cache is shown as enabled, select Purge all caches and wait for \"All caches purged.\".",
+        "Open {page_urls} at {viewports} widths. Confirm the footer email shows {new_text} and links to {new_href}, then return to the Feluda job card and select Mark done."
+      ],
+      "validation_status": "validated",
+      "validation_date": "2026-10-30",
+      "validated_by": "Feluda build team on the local demo fixture",
+      "source_hash": "99630e17509afd3a3461f7538e62e1461805d95fa5c1cfa2989eb89788b5b579"
+    },
+    {
+      "recipe_id": "demo.home_button",
+      "version": 1,
+      "job_types": [
+        "link_button_change",
+        "text_update"
+      ],
+      "region": "main",
+      "element": "the call-to-action button (Buttons block) on the Home page",
+      "title": "Change the Home page button label and/or link",
+      "steps": [
+        "Open {admin_url} and sign in with your builder account. In the left menu select Pages.",
+        "Select Home. Confirm the field labelled Button text currently shows {current_text}, matching the reviewed before-crop; if it differs, stop and ask the Care lead for review.",
+        "Click into the field labelled Button text, select all of its text and replace it with exactly: {new_text}",
+        "Click into the field labelled Button link, select all of its text and replace it with exactly: {new_href}",
+        "Select Update and wait for the green notice \"Page updated.\". Then open Settings › Cache; if the page cache is shown as enabled, select Purge all caches and wait for \"All caches purged.\".",
+        "Open {page_urls} at {viewports} widths. Confirm the button reads {new_text} and opens {new_href}, then return to the Feluda job card and select Mark done."
+      ],
+      "validation_status": "validated",
+      "validation_date": "2026-10-30",
+      "validated_by": "Feluda build team on the local demo fixture",
+      "source_hash": "a8c781c8ae8bd35ef6de6542607183d4a756b57314e2108ee2012fb0901e7d6d"
+    },
+    {
+      "recipe_id": "demo.contact_paragraph",
+      "version": 1,
+      "job_types": [
+        "text_update"
+      ],
+      "region": "main",
+      "element": "text in the contact details paragraph on the Contact page",
+      "title": "Change text inside the Contact page details paragraph",
+      "steps": [
+        "Open {admin_url} and sign in with your builder account. In the left menu select Pages.",
+        "Select Contact. Confirm the field labelled Contact details paragraph contains {current_text}, matching the reviewed before-crop; if it does not, stop and ask the Care lead for review.",
+        "In the field labelled Contact details paragraph, replace only {current_text} with exactly {new_text}. Leave every other word of the paragraph unchanged.",
+        "Select Update and wait for the green notice \"Page updated.\". Then open Settings › Cache; if the page cache is shown as enabled, select Purge all caches and wait for \"All caches purged.\".",
+        "Open {page_urls} at {viewports} widths. Confirm the paragraph shows {new_text}, then return to the Feluda job card and select Mark done."
+      ],
+      "validation_status": "validated",
+      "validation_date": "2026-10-30",
+      "validated_by": "Feluda build team on the local demo fixture",
+      "source_hash": "b2c202a91708f5e934d8a16f753500544ff05c0ced9903fe4c073b7620b7e1ad"
+    },
+    {
+      "recipe_id": "demo.logo",
+      "version": 1,
+      "job_types": [
+        "logo_change",
+        "image_swap"
+      ],
+      "region": "banner",
+      "element": "site logo image in the shared Header template part",
+      "title": "Replace the site logo",
+      "steps": [
+        "Open {admin_url} and sign in with your builder account.",
+        "Download the approved replacement image from the Approved image panel on this Feluda job card. Do not use any other file.",
+        "In the left menu select Media › Add New Media File, choose the downloaded file and select Upload. Note the file name shown in the \"Uploaded …\" notice.",
+        "Select Appearance › Editor, then Patterns › Template parts › Header. Confirm the field labelled Site logo currently shows {current_text}; if it differs, stop and ask the Care lead for review.",
+        "In the field labelled Site logo, select the file you uploaded in step 3.",
+        "Select Save and wait for the green notice \"Header template part updated.\". Then open Settings › Cache; if the page cache is shown as enabled, select Purge all caches and wait for \"All caches purged.\".",
+        "Open {page_urls} at {viewports} widths. Confirm the header shows the approved logo, not stretched or cut off, then return to the Feluda job card and select Mark done."
+      ],
+      "validation_status": "validated",
+      "validation_date": "2026-10-31",
+      "validated_by": "Feluda build team on the local demo fixture",
+      "source_hash": "8a9507c6ad10e7a8f8ad52bd21d53f121567dd45348cce0f2511c6e8d5c1a67c"
+    },
+    {
+      "recipe_id": "demo.hero_image",
+      "version": 1,
+      "job_types": [
+        "image_swap"
+      ],
+      "region": "main",
+      "element": "hero image (Image block) on the Home page",
+      "title": "Replace the Home page hero image",
+      "steps": [
+        "Open {admin_url} and sign in with your builder account.",
+        "Download the approved replacement image from the Approved image panel on this Feluda job card. Do not use any other file.",
+        "In the left menu select Media › Add New Media File, choose the downloaded file and select Upload. Note the file name shown in the \"Uploaded …\" notice.",
+        "Select Pages › Home. Confirm the field labelled Hero image currently shows {current_text}; if it differs, stop and ask the Care lead for review.",
+        "In the field labelled Hero image, select the file you uploaded in step 3.",
+        "Select Update and wait for the green notice \"Page updated.\". Then open Settings › Cache; if the page cache is shown as enabled, select Purge all caches and wait for \"All caches purged.\".",
+        "Open {page_urls} at {viewports} widths. Confirm the hero shows the approved image, not stretched or cut off, then return to the Feluda job card and select Mark done."
+      ],
+      "validation_status": "validated",
+      "validation_date": "2026-10-31",
+      "validated_by": "Feluda build team on the local demo fixture",
+      "source_hash": "0a838a9360a247ab3a0d70fd71b02c6230b396e047741b8303a2ca00ab60e01d"
+    },
+    {
+      "recipe_id": "demo.menu_edit",
+      "version": 1,
+      "job_types": [
+        "menu_change"
+      ],
+      "region": "navigation",
+      "element": "an existing item of the primary navigation menu",
+      "title": "Rename or relink a menu item, or reorder the menu",
+      "steps": [
+        "Open {admin_url} and sign in with your builder account. In the left menu select Appearance › Menus.",
+        "Find the row whose Navigation label is exactly {current_text}. If there is no such row, stop and ask the Care lead for review.",
+        "In that row, replace the Navigation label with exactly {new_text} and the URL with exactly {new_href}.",
+        "Required menu order: {menu_order}. If an order is given, move labels between rows so that rows 1, 2, 3 … read in that order (keep each label with its own URL).",
+        "Select Save Menu and wait for the notice \"Primary menu has been updated.\". Then open Settings › Cache; if the page cache is shown as enabled, select Purge all caches and wait for \"All caches purged.\".",
+        "Open {page_urls} at {viewports} widths (on mobile, tap Menu to open it). Confirm the menu shows {new_text} linking to {new_href}, then return to the Feluda job card and select Mark done."
+      ],
+      "validation_status": "validated",
+      "validation_date": "2026-10-31",
+      "validated_by": "Feluda build team on the local demo fixture",
+      "source_hash": "baa5cd02cacf7cf8c4f85df38bf2b06a6e3a370c07536971aae8609b4d4f9c89"
+    },
+    {
+      "recipe_id": "demo.menu_add",
+      "version": 1,
+      "job_types": [
+        "menu_change"
+      ],
+      "region": "navigation",
+      "element": "a new item in the primary navigation menu",
+      "title": "Add a new menu item",
+      "steps": [
+        "Open {admin_url} and sign in with your builder account. In the left menu select Appearance › Menus.",
+        "Confirm no row already has the Navigation label {new_text}; if one does, stop and ask the Care lead for review.",
+        "In the first empty row, enter the Navigation label {new_text} and the URL {new_href}.",
+        "Required menu order: {menu_order}. If an order is given, move labels between rows so that rows 1, 2, 3 … read in that order (keep each label with its own URL).",
+        "Select Save Menu and wait for the notice \"Primary menu has been updated.\". Then open Settings › Cache; if the page cache is shown as enabled, select Purge all caches and wait for \"All caches purged.\".",
+        "Open {page_urls} at {viewports} widths (on mobile, tap Menu to open it). Confirm the menu shows {new_text} linking to {new_href}, then return to the Feluda job card and select Mark done."
+      ],
+      "validation_status": "validated",
+      "validation_date": "2026-10-31",
+      "validated_by": "Feluda build team on the local demo fixture",
+      "source_hash": "d98b362cc8acd30d4e99cfff82781595fe20fb4d35b7fc66a56870f3a97d1a8d"
+    },
+    {
+      "recipe_id": "demo.contact_form_delivery",
+      "version": 1,
+      "job_types": [
+        "form_check"
+      ],
+      "region": "main",
+      "element": "the contact form's email delivery settings",
+      "title": "Fix contact form email delivery",
+      "steps": [
+        "Open {admin_url} and sign in with your builder account. In the left menu select Contact.",
+        "In the field labelled Send notifications to, replace the value with exactly {new_text}.",
+        "In the field labelled Mail delivery, select On.",
+        "Select Save Changes and wait for the notice \"Contact form settings saved.\".",
+        "Do not submit the contact form yourself. Return to the Feluda job card and select Mark done; Feluda sends one tagged test message with the approved test account and checks the test inbox."
+      ],
+      "validation_status": "validated",
+      "validation_date": "2026-10-31",
+      "validated_by": "Feluda build team on the local demo fixture",
+      "source_hash": "53f70338d06b18bd33777d5d2bef9c1932674bc89234b3e6908015622c1cb03b"
+    }
+  ],
+  "form_tests": {
+    "enabled": true,
+    "approved_by": "Feluda build team (local demo fixture only)",
+    "form_selector": "form#contact-form",
+    "fields": {
+      "#your-name": "{account.name}",
+      "#your-email": "{account.email}",
+      "#your-message": "Automated delivery check {correlation_id} from the Website Care team. Please ignore."
+    },
+    "submit_selector": "form#contact-form button[type=submit]",
+    "success_text": "Thank you for your message",
+    "recipient": "frontdesk@brightsmile.example",
+    "test_account": "demo_dental_local",
+    "inbox": {
+      "type": "demo",
+      "path": "/__demo/inbox"
+    },
+    "receipt_timeout_s": 20,
+    "cleanup": "Demo inbox is reset with the demo site; real sites must name a cleanup owner and procedure before enabling."
+  }
+}

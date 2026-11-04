@@ -1,0 +1,40 @@
+{# Shared UI macros. #}
+
+{# Lifecycle stepper. stages: list of (label, [statuses]); problems: {status: tone}. #}
+{% macro stepper(stages, status, problems={}, done_status=none) %}
+{% set ns = namespace(cur=-1) %}
+{% for label, sts in stages %}{% if status in sts %}{% set ns.cur = loop.index0 %}{% endif %}{% endfor %}
+{% if status == done_status %}{% set ns.cur = stages|length %}{% endif %}
+<ol class="stepper">
+  {% for label, sts in stages %}
+    {% set state = "done" if loop.index0 < ns.cur else ("current" if loop.index0 == ns.cur else "todo") %}
+    <li class="{{ state }}{% if state == 'current' and status in problems %} {{ problems[status] }}{% endif %}">
+      <span class="dot">{% if state == "done" %}<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>{% else %}{{ loop.index }}{% endif %}</span>
+      <span class="lbl">{{ label }}{% if state == 'current' %}<small>{{ status.replace('_',' ') }}</small>{% endif %}</span>
+    </li>
+  {% endfor %}
+</ol>
+{% endmacro %}
+
+{% macro request_stepper(status) %}{{ stepper([
+  ("Intake", ["transcribing", "awaiting_transcript"]),
+  ("Plan", ["parsing", "plan_failed"]),
+  ("Review", ["needs_review"]),
+  ("Build", ["with_builder", "needs_human"]),
+  ("Verify", ["verifying"]),
+  ("Close", ["ready_to_close", "closing"]),
+  ("Done", []),
+], status, {"plan_failed": "bad", "needs_human": "warn", "awaiting_transcript": "warn"}, "done") }}{% endmacro %}
+
+{% macro job_stepper(status) %}{{ stepper([
+  ("Review", ["draft", "needs_review"]),
+  ("Ready", ["ready"]),
+  ("Build", ["with_builder", "failed"]),
+  ("Verify", ["queued", "verifying", "verification_error", "needs_human"]),
+  ("Passed", []),
+], status, {"failed": "bad", "needs_human": "warn", "verification_error": "warn"}, "passed") }}{% endmacro %}
+
+{% macro progress(done, total) %}
+<div class="progress" title="{{ done }} of {{ total }} passed"><span style="width:{{ (100 * done / total) if total else 0 }}%"></span></div>
+<div class="small muted">{{ done }}/{{ total }} passed</div>
+{% endmacro %}

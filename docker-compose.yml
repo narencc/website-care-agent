@@ -1,0 +1,16 @@
+# Optional Postgres for production-like runs:
+#   docker compose up -d
+#   DATABASE_URL=postgresql+psycopg://feluda:feluda@localhost:5432/feluda
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: feluda
+      POSTGRES_PASSWORD: feluda
+      POSTGRES_DB: feluda
+    ports:
+      - "5432:5432"
+    volumes:
+      - feluda-pg:/var/lib/postgresql/data
+volumes:
+  feluda-pg:

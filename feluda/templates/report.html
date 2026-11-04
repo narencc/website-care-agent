@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Evidence report {{ req.id }}{% endblock %}
+{% block content %}
+<div class="crumbs noprint"><a href="/">Queue</a><span class="sep">›</span><a href="/requests/{{ req.id }}">Request {{ req.id }}</a><span class="sep">›</span><span>Evidence report</span></div>
+<div class="page-head"><h1>Evidence report</h1>
+  <a class="btn ghost noprint" href="/requests/{{ req.id }}/report.json">JSON export</a>
+  <a class="btn noprint" href="#" onclick="window.print();return false">Print / PDF</a></div>
+<div class="panel">
+  <div><strong>{{ req.site_url }}</strong> · request <span class="mono">{{ req.id }}</span> · {{ req.customer or "customer" }}</div>
+  <div class="small">Status <span class="badge {{ tone(req.status) }}">{{ req.status }}</span>{% if req.closed_at %} · closed {{ req.closed_at.strftime('%Y-%m-%d %H:%M') }} UTC{% endif %} · model cost ${{ "%.4f"|format(cost) }}</div>
+  {% if run %}<div class="small">Final consistency gate {{ run.id }}: <span class="badge {{ tone(run.outcome) }}">{{ run.outcome }}</span>
+    {% if run.window_started_at %}verification interval {{ run.window_started_at.strftime('%Y-%m-%d %H:%M:%S') }}–{{ run.finished_at.strftime('%H:%M:%S') if run.finished_at else '…' }} UTC{% endif %}
+    · window {{ run.settings.closure_window_s }}s, fingerprint max age {{ run.settings.fingerprint_max_age_s }}s{% if run.reasons %} · {{ run.reasons|join('; ') }}{% endif %}</div>{% endif %}
+  <p class="small muted">Scope: only the targets, pages and viewports listed below were verified. Sequential browser captures cannot prove a single atomic snapshot of the site, and edits made outside this tool after the interval are not covered.</p>
+</div>
+
+<h2>Requirements</h2>
+<div class="panel"><ul class="small">{% for r in req.requirements %}{% set c = coverage.get(r.id, {}) %}<li><span class="mono">{{ r.id }}</span> {{ r.text }} — <strong>{{ c.disposition }}</strong>{% if c.jobs %} ({{ c.jobs|join(', ') }}){% endif %}{% if c.note %}: {{ c.note }}{% endif %}</li>{% endfor %}</ul></div>
+
+{% for it in items %}{% set job = it.job %}{% set v = it.shown %}
+<div class="panel">
+  <div class="row"><h3 style="margin:0 auto 0 0">{{ job.title or job.key }}</h3><span class="badge {{ tone(job.status) }}">{{ job.status }}</span></div>
+  <div class="small muted">{{ job.id }} · r{{ job.revision }} · {{ it.target.target_description }} · {{ it.target.current_value }} → {{ it.target.desired_value }}{% if job.exclusions %} · exclusions: {{ job.exclusions|join('; ') }}{% endif %}</div>
+  {% if v %}
+    <div class="small">Verdict <span class="badge {{ tone(v.result) }}">{{ v.result }}</span> {{ v.id }} · submission {{ v.submission_id }} · {{ v.created_at.strftime('%Y-%m-%d %H:%M:%S') }} UTC · judge {{ v.model or 'n/a' }} ({{ v.prompt_version }}){% if v.confidence is not none %} · confidence {{ "%.2f"|format(v.confidence) }}{% endif %}</div>
+    <ul class="small">{% for c in v.check_results %}<li><strong class="mono">{{ c.check_id }}</strong>: {{ c.result }} — {{ c.explanation }}</li>{% endfor %}</ul>
+    {% if v.reasons %}<div class="small">Reasons: {{ v.reasons|join(' ') }}</div>{% endif %}
+    {% if v.regressions %}<div class="small">Regressions: {% for r in v.regressions %}{{ r.region }} {{ r.page_url }} ({{ r.viewport }}); {% endfor %}</div>{% endif %}
+    {% for b, a in it.pairs %}
+      <div class="small muted" style="margin-top:8px">{{ a.requested_url }} — {{ a.viewport }} · captured {{ a.captured_at.strftime('%H:%M:%S') }} UTC</div>
+      <div class="pair">
+        <div>{% if b and b.element_crop %}<img class="crop" src="{{ signed(b.element_crop) }}" alt="before">{% endif %}</div>
+        <div>{% if a.element_crop %}<img class="crop" src="{{ signed(a.element_crop) }}" alt="after">{% endif %}</div>
+      </div>
+    {% endfor %}
+  {% else %}<p class="small muted">Not verified yet.</p>{% endif %}
+</div>
+{% endfor %}
+{% endblock %}

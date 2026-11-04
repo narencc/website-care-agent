@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% block title %}{{ job.title or job.key }} · Feluda{% endblock %}
+{% block content %}
+{% import "_ui.html" as ui %}
+<div class="crumbs"><a href="/">Queue</a><span class="sep">›</span><a href="/requests/{{ req.id }}">Request {{ req.id }}</a><span class="sep">›</span><span>{{ job.key }}</span></div>
+<div class="page-head"><h1>{{ job.title or job.key }}</h1>
+  <span class="badge lg {{ tone(job.status) }}">{{ job.status.replace('_',' ') }}</span></div>
+<div class="meta-line"><span class="mono">{{ job.id }}</span><span>revision r{{ job.revision }}</span><span>{{ job.type.replace('_',' ') }}</span><span>{{ job.scope.replace('_',' ') }}</span>{% if job.assigned_to %}<span>builder {{ job.assigned_to }}</span>{% endif %}{% if job.attempts %}<span>{{ job.attempts }} failed attempt(s)</span>{% endif %}</div>
+{{ ui.job_stepper(job.status) }}
+
+{% if freeze %}<div class="banner">Site edit freeze: final verification is running on {{ req.site_host }}. Do not edit the site; new work and Mark done are blocked until it finishes.</div>{% endif %}
+{% if job.blockers %}<div class="flash err"><strong>Blocked from ready:</strong><ul style="margin:4px 0">{% for b in job.blockers %}<li>{{ b }}</li>{% endfor %}</ul></div>{% endif %}
+
+
+{# ---------- Primary action ---------- #}
+<div class="next-step">
+  <div class="eyebrow">{{ "Outcome" if job.status == "passed" else "Next step" }}</div>
+  {% if job.status_reason and job.status not in ('passed',) %}<div class="small muted" style="margin-bottom:8px">{{ job.status_reason }}</div>{% endif %}
+  {% if job.status == "ready" %}
+    {% if deps and deps|selectattr('status','ne','passed')|list %}<p class="small">Waiting on: {% for d in deps %}<a href="/jobs/{{ d.id }}">{{ d.key }}</a> ({{ d.status }}) {% endfor %}</p>{% endif %}
+    <form method="post" action="/jobs/{{ job.id }}/start"><button class="big" type="submit" {% if role != 'builder' or freeze %}disabled{% endif %}>Start this job</button>
+    {% if role != 'builder' %}<span class="small muted"> Switch to a builder to start.</span>{% endif %}</form>
+  {% elif job.status in ("with_builder", "failed") %}
+    <form method="post" action="/jobs/{{ job.id }}/done" onsubmit="this.querySelector('button').disabled=true;this.querySelector('button').textContent='Submitting…'">
+      <input type="hidden" name="client_token" value="{{ client_token }}">
+      <p class="small">{% if job.status == "failed" %}Fix the failing criteria below, then mark done again. This creates a new verification attempt on the same revision.{% else %}When every step is complete and the public site shows the change, mark done.{% endif %}</p>
+      <button class="big" type="submit" {% if role != 'builder' or freeze %}disabled{% endif %}>Mark done</button>
+      {% if role != 'builder' %}<span class="small muted"> Switch to a builder to mark this done.</span>{% elif freeze %}<span class="small muted"> Blocked while the site edit freeze is on.</span>{% endif %}
+    </form>
+  {% elif job.status in ("queued", "verifying") %}
+    <p><span class="badge busy">Verifying</span> Capturing the live site at {{ target.viewports|join(' and ') }} widths and checking every criterion. This page refreshes automatically.</p>
+  {% elif job.status == "verification_error" %}
+    <p><strong>Verification unavailable</strong> — this is an infrastructure problem, not evidence that your change is wrong.</p>
+    <form method="post" action="/jobs/{{ job.id }}/retry"><button class="cta" type="submit" {% if freeze %}disabled{% endif %}>Retry verification</button></form>
+  {% elif job.status == "needs_human" %}
+    <p><strong>Needs review</strong> — a Care lead must resolve this. It cannot be marked passed manually.</p>
+    {% if role == "care_lead" %}
+      <form method="post" action="/jobs/{{ job.id }}/resolve" class="grid2">
+        <div><label for="action">Decision</label><select id="action" name="action">
+          <option value="return_to_builder">Change is wrong — return to builder</option>
+          <option value="mark_failed">Mark failed with my note</option>
+          <option value="send_to_review">Scope/target problem — send back to review</option></select></div>
+        <div><label for="note">Note (shown to the builder)</label><input type="text" id="note" name="note" required></div>
+        <div><button type="submit">Record decision</button></div>
+      </form>
+      {% if not job.baseline_locked %}<form method="post" action="/jobs/{{ job.id }}/recapture" style="margin-top:8px"><button class="secondary" type="submit">Recapture baseline</button></form>{% endif %}
+    {% endif %}
+  {% elif job.status == "passed" %}
+    <p><span class="badge good">Passed</span> All required checks passed on revision r{{ job.revision }} for submission <span class="mono">{{ job.current_submission_id }}</span>. The request closes after the final consistency gate.</p>
+  {% elif job.status == "needs_review" %}
+    <p>Waiting for Care lead review{% if not approval %} and coverage approval{% endif %}{% if not job.blockers and approval %}; before-evidence is being captured{% endif %}.</p>
+  {% endif %}
+</div>
+
+{# ---------- Failure / latest verdict ---------- #}
+{% if shown %}
+<h2>Latest verification {% if shown.invalidated %}<span class="badge warn">stale: {{ shown.superseded_reason }}</span>{% endif %}</h2>
+<div class="panel">
+  <div class="row"><span class="badge {{ tone(shown.result) }}">{{ shown.result.replace('_',' ') }}</span>
+    <span class="small muted">verdict <span class="mono">{{ shown.id }}</span> · submission {{ shown.submission_id }} · r{{ shown.job_revision }} · {{ shown.created_at.strftime('%H:%M:%S') }} UTC{% if shown.model %} · judge {{ shown.model }}{% endif %}</span></div>
+  <ul>{% for r in shown.reasons if not r.startswith('[') %}<li>{{ r }}</li>{% endfor %}</ul>
+  {% for c in shown.check_results %}
+    <div class="check {{ tone(c.result) }}"><strong class="mono">{{ c.check_id }}</strong> <span class="badge {{ tone(c.result) }}">{{ c.result }}</span>{% if c.confidence is not none %} <span class="small muted">confidence {{ "%.2f"|format(c.confidence) }}</span>{% endif %}
+      <div class="small">{{ c.explanation }}</div></div>
+  {% endfor %}
+  {% if shown.regressions %}<h3>Changes outside the target</h3><ul class="small">{% for r in shown.regressions %}<li>{{ r.region }} on {{ r.page_url }} ({{ r.viewport }}): removed {{ r.removed }}, added {{ r.added }}</li>{% endfor %}</ul>{% endif %}
+  {% if pairs %}<h3>Before / after</h3>
+    {% for b, a in pairs %}
+      <div class="small muted" style="margin-top:10px">{{ a.requested_url }} — {{ a.viewport }}{% if a.http and a.http.freshness_retries %} · {{ a.http.freshness_retries }} freshness retr{{ 'y' if a.http.freshness_retries == 1 else 'ies' }}{% endif %}</div>
+      <div class="pair">
+        <div><div class="small">Before</div>{% if b and b.element_crop %}<img class="crop" src="{{ signed(b.element_crop) }}" alt="before">{% else %}<span class="muted small">no crop</span>{% endif %}</div>
+        <div><div class="small">After — shows “{{ a.element_text or '—' }}”</div>{% if a.element_crop %}<img class="crop" src="{{ signed(a.element_crop) }}" alt="after">{% else %}<span class="muted small">{{ a.error or 'target not found' }}</span>{% endif %}
+          {% if a.page_screenshot %}<div class="small"><a href="{{ signed(a.page_screenshot) }}" target="_blank">full page</a>{% if a.context_crop %} · <a href="{{ signed(a.context_crop) }}" target="_blank">context</a>{% endif %}</div>{% endif %}</div>
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
+{% endif %}
+
+<div class="grid2">
+  <div>
+    {# ---------- Steps ---------- #}
+    <h2>Steps</h2>
+    <div class="panel">
+      {% if job.builder_steps %}
+      <ol class="steps">{% for st in job.builder_steps %}<li>{{ st.instruction }}</li>{% endfor %}</ol>
+      {% else %}<p class="muted">No validated editing recipe; a Care lead must choose one before this job can be ready.</p>{% endif %}
+      {% set rs = job.recipe_snapshot %}
+      {% if rs %}<details><summary>Recipe snapshot</summary>
+        <div class="small">{{ rs.recipe_id }} v{{ rs.version }} · {{ rs.validation_status }} {{ rs.validation_date or '' }}{% if rs.validated_by %} by {{ rs.validated_by }}{% endif %}<br>
+        source hash <span class="mono">{{ (rs.source_hash or 'missing')[:16] }}</span> · profile {{ rs.profile_id }}</div>
+        <ol class="small">{% for st in rs.template_steps %}<li class="mono">{{ st }}</li>{% endfor %}</ol>
+        <div class="small">Values: {% for k, v in rs['values'].items() %}<span class="mono">{{ k }}={{ v }}</span>; {% endfor %}</div>
+      </details>{% endif %}
+    </div>
+
+    {# ---------- Acceptance ---------- #}
+    <h2>Acceptance criteria</h2>
+    <div class="panel">
+      {% for c in job.acceptance_checks %}
+        <div class="check"><strong>{{ c.kind.replace('_',' ')|capitalize }}</strong>{% if c.required %} <span class="badge">required</span>{% endif %}<div class="small">{{ c.expected }}{% if c.region %} (in {{ c.region }}){% endif %}</div></div>
+      {% endfor %}
+    </div>
+  </div>
+  <div>
+    {# ---------- Target + before ---------- #}
+    <h2>Exact element</h2>
+    <div class="panel">
+      <p><strong>{{ target.target_description }}</strong><br><span class="small muted">{{ target.element_role }} in {{ target.region }}</span></p>
+      <p class="small">Change <span class="mono">{{ target.current_value }}</span> → <span class="mono">{{ target.desired_value }}</span>{% if target.desired_href %}<br>Link → <span class="mono">{{ target.desired_href }}</span>{% elif target.current_href %}<br>Link stays <span class="mono">{{ target.current_href }}</span>{% endif %}</p>
+      <div class="small">Pages: {% for u in target.page_urls %}<a href="{{ u }}" target="_blank" rel="noopener">{{ u }}</a>{% if not loop.last %}, {% endif %}{% endfor %}<br>Viewports: {{ target.viewports|join(', ') }}{% if target.expected_menu_order %}<br>Required menu order: <span class="mono">{{ target.expected_menu_order|join(' | ') }}</span>{% endif %}{% if target.menu_action == 'add' %}<br>Adds a new menu item{% endif %}</div>
+      {% if job.exclusions %}<div class="small" style="margin-top:6px"><strong>Exclusions:</strong> {{ job.exclusions|join('; ') }}</div>{% endif %}
+      {% if deps %}<div class="small" style="margin-top:6px"><strong>Depends on:</strong> {% for d in deps %}<a href="/jobs/{{ d.id }}">{{ d.key }}</a> ({{ d.status }}) {% endfor %}</div>{% endif %}
+      <h3>Before ({{ "locked original baseline" if job.baseline_locked else "baseline" }})</h3>
+      {% for e in baseline %}
+        <div class="small muted">{{ e.requested_url }} — {{ e.viewport }}{% if e.sam_box and e.sam_box.best_iou is defined %} · SAM {{ "agrees" if e.sam_box.agrees_with_dom else "disagrees" }} (IoU {{ e.sam_box.best_iou }}){% endif %}</div>
+        {% if e.element_crop %}<img class="crop" src="{{ signed(e.element_crop) }}" alt="before crop">{% else %}<span class="small muted">{{ e.error or 'no crop' }}</span>{% endif %}
+      {% else %}<p class="small muted">Captured after coverage approval.</p>{% endfor %}
+    </div>
+  </div>
+</div>
+
+{% if job.type in ("image_swap", "logo_change") %}
+<h2>Approved replacement image</h2>
+<div class="panel">
+  {% if target.desired_asset_key %}
+    <div class="row"><img class="crop" style="max-height:180px;max-width:320px" src="{{ signed(target.desired_asset_key) }}" alt="Approved replacement image">
+      <a class="btn" href="{{ signed(target.desired_asset_key) }}" download>Download approved image</a></div>
+    <p class="small muted">Verification compares what the site shows with this image visually (a perceptual fingerprint), so WordPress renaming or resizing it is fine; a different or stretched image fails.</p>
+  {% else %}
+    <p style="color:var(--bad)">No approved image yet. Upload the customer's image or approve a Muse Image draft; the job cannot be ready until one is approved.</p>
+  {% endif %}
+  {% if role == "care_lead" and job.status not in ("queued", "verifying") %}
+    <div class="grid2" style="margin-top:8px">
+      <form method="post" action="/jobs/{{ job.id }}/asset" enctype="multipart/form-data">
+        <label for="asset">Upload the approved image (PNG/JPEG/WebP)</label>
+        <input type="file" id="asset" name="file" accept="image/png,image/jpeg,image/webp" required>
+        <button class="secondary" type="submit">Use this image</button>
+      </form>
+      <form method="post" action="/jobs/{{ job.id }}/drafts">
+        <label for="prompt">Or draft one with Muse Image 1.0 (the customer asked for new visuals)</label>
+        <textarea id="prompt" name="prompt" placeholder="A simple flat logo: a white tooth on an orange circle, no text" required></textarea>
+        <button class="secondary" type="submit">Draft image</button>
+      </form>
+    </div>
+  {% endif %}
+  {% if drafts %}
+    <h3>Muse Image drafts</h3>
+    <div class="row">{% for d in drafts %}
+      <div class="panel thumb">
+        <span class="badge {{ tone(d.status) }}">{{ d.status }}</span>
+        {% if d.key %}<img class="crop" src="{{ signed(d.key) }}" alt="draft">{% endif %}
+        <div class="small muted">{{ d.prompt[:120] }}</div>{% if d.error %}<div class="small" style="color:var(--bad)">{{ d.error[:160] }}</div>{% endif %}
+        {% if role == "care_lead" and d.status == "draft" %}
+          <form method="post" action="/drafts/{{ d.id }}/approve" style="display:inline"><input type="hidden" name="job_id" value="{{ job.id }}"><button class="cta" type="submit" style="padding:8px 18px">Approve</button></form>
+          <form method="post" action="/drafts/{{ d.id }}/reject" style="display:inline"><input type="hidden" name="job_id" value="{{ job.id }}"><button class="secondary" type="submit" style="padding:8px 18px">Reject</button></form>
+        {% endif %}
+      </div>{% endfor %}</div>
+  {% endif %}
+</div>
+{% endif %}
+
+{% if job.type == "form_check" %}
+<h2>Test form submissions</h2>
+<div class="panel">
+  <p class="small muted">Each verification attempt submits the form at most once with the approved test account and a unique tag, then waits for that tag in the test inbox. An unclear submission is never repeated; it is settled by reading the inbox.</p>
+  <table class="small"><thead><tr><th>Tag</th><th>Status</th><th>Submitted</th><th>Site feedback</th><th>Inbox receipt</th></tr></thead><tbody>
+  {% for o in form_ops %}<tr><td class="mono">{{ o.correlation_id }}</td><td><span class="badge {{ tone(o.status) }}">{{ o.status }}</span></td>
+    <td>{{ o.submitted_at.strftime('%H:%M:%S') if o.submitted_at else '—' }}</td><td>{{ o.success_feedback or o.detail or '—' }}</td>
+    <td>{% if o.receipt %}to {{ o.receipt.to }}{% if not o.receipt.recipient_ok %} <span style="color:var(--bad)">(wrong recipient)</span>{% endif %}{% else %}—{% endif %}</td></tr>
+  {% else %}<tr><td colspan="5" class="muted">No submissions yet.</td></tr>{% endfor %}
+  </tbody></table>
+</div>
+{% endif %}
+
+{# ---------- History ---------- #}
+<h2>Attempt history</h2>
+<div class="panel">
+  <table class="small"><thead><tr><th>Submission</th><th>By</th><th>When</th><th>Revision</th><th>Verdicts</th></tr></thead><tbody>
+  {% for sub in submissions %}
+    <tr><td class="mono">{{ sub.id }}{% if sub.id == job.current_submission_id %} (current){% endif %}</td><td>{{ sub.submitted_by }}</td><td>{{ sub.submitted_at.strftime('%H:%M:%S') }}</td><td>r{{ sub.job_revision }}</td>
+      <td>{% for v in verdicts if v.submission_id == sub.id %}<span class="badge {{ tone(v.result) }}">{{ v.result }}{% if v.closure_run_id %} (final gate){% endif %}</span>{% if not v.committed %} <span class="muted">not committed: {{ v.superseded_reason }}</span>{% elif v.invalidated %} <span class="muted">stale</span>{% endif %} {% endfor %}</td></tr>
+  {% else %}<tr><td colspan="5" class="muted">No submissions yet.</td></tr>{% endfor %}
+  </tbody></table>
+</div>
+
+{# ---------- Edit before build ---------- #}
+{% if job.status not in ("queued", "verifying") %}
+<details class="panel"><summary>Correct this job (creates revision r{{ job.revision + 1 }})</summary>
+  {% if req.closed_at %}<p class="small" style="color:var(--bad)">This request is closed. Saving a correction reopens it, invalidates the drafted done message and requires re-review, re-verification and a new final consistency gate.</p>{% endif %}
+  <form method="post" action="/jobs/{{ job.id }}/edit">
+    <div class="grid2">
+      <div><label>Title</label><input type="text" name="title" value="{{ job.title }}"></div>
+      <div><label>Recipe</label><select name="recipe_id"><option value="">(none)</option>
+        {% for r in (profile.recipes if profile else []) %}<option value="{{ r.recipe_id }}" {% if job.recipe_snapshot and job.recipe_snapshot.recipe_id == r.recipe_id %}selected{% endif %}>{{ r.recipe_id }} — {{ r.title }}</option>{% endfor %}</select></div>
+      <div><label>Current value (exactly as on the site)</label><input type="text" name="current_value" value="{{ target.current_value }}"></div>
+      <div><label>Desired value</label><input type="text" name="desired_value" value="{{ target.desired_value }}"></div>
+      <div><label>Current link</label><input type="text" name="current_href" value="{{ target.current_href or '' }}"></div>
+      <div><label>Desired link</label><input type="text" name="desired_href" value="{{ target.desired_href or '' }}"></div>
+      <div><label>Region</label><select name="region">{% for r in ['banner','navigation','main','contentinfo','complementary','page'] %}<option {% if target.region==r %}selected{% endif %}>{{ r }}</option>{% endfor %}</select></div>
+      <div><label>Element</label><select name="element_role">{% for r in ['link','button','text','heading','image','form'] %}<option {% if target.element_role==r %}selected{% endif %}>{{ r }}</option>{% endfor %}</select></div>
+    </div>
+    <label>Page URLs (one per line)</label><textarea name="page_urls">{{ target.page_urls|join('\n') }}</textarea>
+    <label>Viewports</label>
+    {% for vp in ['desktop','mobile'] %}<label style="display:inline;font-weight:400"><input type="checkbox" name="viewports" value="{{ vp }}" {% if vp in target.viewports %}checked{% endif %}> {{ vp }}</label> {% endfor %}
+    <label style="font-weight:400"><input type="checkbox" name="require_old_value_absent" value="yes" {% if target.require_old_value_absent %}checked{% endif %}> Old value must be absent from this region</label>
+    <label>Required menu order (menu jobs; labels separated by |)</label><input type="text" name="expected_menu_order" value="{{ (target.expected_menu_order or [])|join(' | ') }}">
+    <label>Known exclusions (one per line; shown to builder and in the report)</label><textarea name="exclusions">{{ job.exclusions|join('\n') }}</textarea>
+    <label>Reason for the correction (logged)</label><input type="text" name="reason" required>
+    <p><button type="submit">Save correction</button></p>
+  </form>
+</details>
+{% endif %}
+
+<details class="panel"><summary>Audit log</summary>
+  <table class="small"><tbody>{% for e in events %}<tr><td>{{ e.at.strftime('%H:%M:%S') }}</td><td>r{{ e.revision }}</td><td>{{ e.actor }}</td><td>{{ e.action }}</td><td class="mono audit-detail">{{ e.detail|tojson if e.detail is mapping else e.detail }}</td></tr>{% endfor %}</tbody></table>
+</details>
+{% endblock %}

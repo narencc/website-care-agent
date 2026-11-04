@@ -1,0 +1,36 @@
+{
+  "id": "example_dental_blocktheme",
+  "name": "example-dental.com (block theme; recipe pending validation)",
+  "origins": [
+    "https://example-dental.com"
+  ],
+  "admin_url": "https://example-dental.com/wp-admin/",
+  "theme": "Block theme with Header template part",
+  "editor": "Site Editor",
+  "plugins": [],
+  "validated_at": null,
+  "dynamic_masks": [],
+  "recipes": [
+    {
+      "recipe_id": "demo_site.header_phone",
+      "version": 1,
+      "job_types": [
+        "text_update"
+      ],
+      "region": "banner",
+      "element": "phone link in the shared Header template part",
+      "title": "Change the header phone link",
+      "validation_status": "requires_site_validation",
+      "validation_date": null,
+      "source_hash": null,
+      "steps": [
+        "Open WordPress admin for the approved site. Select Appearance > Editor.",
+        "Open Patterns > Manage all template parts > Header. Confirm the preview matches the reviewed before-crop; stop for review if the labels or header differ.",
+        "Select the header Phone link block in List View. Replace its visible text with {new_text}.",
+        "Edit that block's link destination to {new_href} and apply the link change.",
+        "Select Save, confirm only the Header template part is selected, and confirm Save again. Wait for the saved confirmation. This fixture has no WordPress cache plugin; any other cache configuration requires a separately validated recipe.",
+        "Open {page_urls} at {viewports} widths. Confirm the header shows {new_text} and its link destination is {new_href}, then return to the job card and select Mark done."
+      ]
+    }
+  ]
+}

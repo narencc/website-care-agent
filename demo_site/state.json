@@ -1,0 +1,35 @@
+{
+  "site_name": "Bright Smile Dental",
+  "header_phone_text": "(555) 201-9900",
+  "header_phone_href": "tel:+15552019900",
+  "footer_phone_text": "(555) 201-4410",
+  "footer_phone_href": "tel:+15552014410",
+  "footer_email_text": "hello@brightsmile.example",
+  "footer_email_href": "mailto:hello@brightsmile.example",
+  "home_button_label": "Book an appointment",
+  "home_button_href": "/contact/",
+  "contact_paragraph": "Call our front desk on (555) 201-4410 to book or reschedule.",
+  "hours_text": "Mon\u2013Fri 8am\u20136pm, Sat 9am\u20131pm",
+  "logo_src": "/media/logo-teal.png",
+  "logo_alt": "Bright Smile Dental logo",
+  "hero_src": "/media/hero-family.png",
+  "hero_alt": "Smiling family in the clinic",
+  "menu_items": [
+    {
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "label": "Services",
+      "href": "/services/"
+    },
+    {
+      "label": "Contact",
+      "href": "/contact/"
+    }
+  ],
+  "form_recipient": "frontdesk@brightsmile.example",
+  "form_delivery": "on",
+  "form_mode": "post",
+  "cache_enabled": false
+}

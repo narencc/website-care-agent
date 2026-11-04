@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block content %}
+{% import "_ui.html" as ui %}
+{% set attention_states = ["needs_human", "plan_failed", "awaiting_transcript"] %}
+{% set ns = namespace(attn=0, prog=0, done=0) %}
+{% for r in rows %}
+  {% if r.req.status == "done" %}{% set ns.done = ns.done + 1 %}
+  {% elif r.req.status in attention_states or r.stuck %}{% set ns.attn = ns.attn + 1 %}
+  {% else %}{% set ns.prog = ns.prog + 1 %}{% endif %}
+{% endfor %}
+<div class="page-head">
+  <div style="margin-right:auto"><div class="eyebrow">Care operations</div><h1>Request queue</h1></div>
+  {% if role == "care_lead" %}<a class="btn cta" href="#new-request" onclick="document.getElementById('new-request').open=true">New request</a>{% endif %}
+</div>
+
+<div class="kpis">
+  <div class="stat"><div class="label">All requests</div><div class="value">{{ rows|length }}</div><div class="meta">{{ rows|sum(attribute='passed') }}/{{ rows|sum(attribute='jobs') }} jobs passed</div></div>
+  <div class="stat {% if ns.attn %}attn{% endif %}"><div class="label">Needs attention</div><div class="value">{{ ns.attn }}</div><div class="meta">Failed, stuck or waiting on a Care lead</div></div>
+  <div class="stat"><div class="label">In progress</div><div class="value">{{ ns.prog }}</div><div class="meta">Planning, building or verifying</div></div>
+  <div class="stat"><div class="label">Closed</div><div class="value">{{ ns.done }}</div><div class="meta">Passed the final consistency gate</div></div>
+</div>
+
+<div class="row" style="margin:32px 0 16px" role="group" aria-label="Filter requests">
+  <button type="button" class="pill-tab active" data-filter="all" aria-pressed="true">All</button>
+  <button type="button" class="pill-tab" data-filter="attn" aria-pressed="false">Needs attention</button>
+  <button type="button" class="pill-tab" data-filter="prog" aria-pressed="false">In progress</button>
+  <button type="button" class="pill-tab" data-filter="done" aria-pressed="false">Closed</button>
+</div>
+<div class="panel">
+  <table class="queue">
+    <thead><tr><th>Request</th><th>Site</th><th style="width:150px">Jobs</th><th>Status</th><th class="num">Age</th><th class="num">Model cost</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+      {% set grp = "done" if r.req.status == "done" else ("attn" if r.req.status in attention_states or r.stuck else "prog") %}
+      <tr class="link-row" data-group="{{ grp }}" data-href="/requests/{{ r.req.id }}">
+        <td>
+          <a href="/requests/{{ r.req.id }}">{{ r.req.customer or "Unknown customer" }}</a>
+          <div class="small muted clamp">{{ r.req.raw_text[:160] }}</div>
+          <span class="chip">{{ r.req.channel }}</span>
+        </td>
+        <td class="small">{{ r.req.site_host or r.req.site_url }}</td>
+        <td>{{ ui.progress(r.passed, r.jobs) }}</td>
+        <td><span class="badge {{ tone(r.req.status) }}">{{ r.req.status.replace('_',' ') }}</span>
+          {% for j in r.stuck %}<div class="small" style="margin-top:6px"><a href="/jobs/{{ j.id }}">{{ j.key }}</a> <span class="badge {{ tone(j.status) }}">{{ j.status.replace('_',' ') }}</span></div>{% endfor %}</td>
+        <td class="num small">{{ r.age }}</td>
+        <td class="num small mono">${{ "%.3f"|format(r.cost) }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6"><div class="empty"><b>No requests yet.</b><span class="muted small">New customer requests from tickets, email and voice notes show up here.</span></div></td></tr>
+    {% endfor %}
+    <tr class="filter-empty" hidden><td colspan="6"><div class="empty"><span class="muted small">Nothing in this view.</span></div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+{% if role == "care_lead" %}
+<details class="panel form-panel" id="new-request" {% if not rows %}open{% endif %}>
+<summary><span><span class="eyebrow" style="display:block;margin:0">Intake</span>New customer request</span></summary>
+<form method="post" action="/requests" enctype="multipart/form-data">
+  <div class="grid2">
+    <div>
+      <label for="site_url">Website URL (required)</label>
+      <input type="url" id="site_url" name="site_url" required placeholder="https://customer-site.com/">
+    </div>
+    <div class="grid2">
+      <div><label for="customer">Customer</label><input type="text" id="customer" name="customer"></div>
+      <div><label for="channel">Channel</label><select id="channel" name="channel"><option>ticket</option><option>email</option><option>voice</option></select></div>
+    </div>
+  </div>
+  <label for="raw_text">Request (paste as received)</label>
+  <textarea id="raw_text" name="raw_text" required placeholder="Hi, our phone number changed to (555) 201-9900 – can you update it in the header and footer?"></textarea>
+  <label for="files">Screenshots (PNG/JPEG/WebP, up to 5 MB) or voice notes (WAV/MP3/M4A/OGG/WebM, up to 25 MB)</label>
+  <input type="file" id="files" name="files" accept="image/png,image/jpeg,image/webp,audio/*" multiple>
+  <p class="small muted">A voice note alone is enough: it is transcribed with Muse Voice Transcribe before planning (or typed by a Care lead if transcription is unavailable). Email and ticket systems can post requests to <span class="mono">/intake/email</span> and <span class="mono">/intake/ticket</span>.</p>
+  <p><button class="cta" type="submit">Plan this request</button></p>
+</form>
+</details>
+{% endif %}
+<script>
+document.querySelectorAll('tr.link-row').forEach(function (tr) {
+  tr.addEventListener('click', function (e) {
+    if (e.target.closest('a, button, form') || String(window.getSelection())) return;
+    location.href = tr.dataset.href;
+  });
+});
+function applyFilter(b) {
+  document.querySelectorAll('[data-filter]').forEach(function (x) { x.classList.toggle('active', x === b); x.setAttribute('aria-pressed', x === b); });
+  var shown = 0;
+  document.querySelectorAll('tr.link-row').forEach(function (tr) {
+    var on = b.dataset.filter === 'all' || tr.dataset.group === b.dataset.filter;
+    tr.hidden = !on; if (on) shown++;
+  });
+  var empty = document.querySelector('tr.filter-empty');
+  if (empty) empty.hidden = shown > 0 || !document.querySelector('tr.link-row');
+  try { sessionStorage.setItem('feluda.queueFilter', b.dataset.filter); } catch (e) {}
+}
+document.querySelectorAll('[data-filter]').forEach(function (b) {
+  b.addEventListener('click', function () { applyFilter(b); });
+});
+try {
+  var saved = document.querySelector('[data-filter="' + sessionStorage.getItem('feluda.queueFilter') + '"]');
+  if (saved) applyFilter(saved);
+} catch (e) {}
+</script>
+{% endblock %}

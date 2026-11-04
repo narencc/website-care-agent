@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Sign in · Feluda{% endblock %}
+{% block content %}
+<div class="panel" style="max-width:440px;margin:48px auto;padding:40px">
+  <div class="eyebrow">Feluda Care Agent</div>
+  <h1>Sign in</h1>
+  <p class="muted" style="margin-top:-8px">Use the account your administrator created for you.</p>
+  <form method="post" action="/login">
+    <label for="username">Username</label>
+    <input type="text" id="username" name="username" autocomplete="username" required autofocus>
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" autocomplete="current-password" required>
+    <input type="hidden" name="next" value="{{ next }}">
+    <p style="margin-top:28px"><button type="submit" style="width:100%">Sign in</button></p>
+  </form>
+  <p class="small muted">Accounts are created by an administrator with <span class="mono">python -m feluda.users add</span>.</p>
+</div>
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block title %}{{ req.id }} · Feluda{% endblock %}
+{% block content %}
+{% import "_ui.html" as ui %}
+<div class="crumbs"><a href="/">Queue</a><span class="sep">›</span><span>Request {{ req.id }}</span></div>
+<div class="page-head"><h1>{{ req.customer or "Customer request" }}</h1>
+  <span class="badge lg {{ tone(req.status) }}">{{ req.status.replace('_',' ') }}</span>
+  <a class="btn secondary" href="/requests/{{ req.id }}/report">Evidence report</a></div>
+<div class="meta-line"><span class="mono">{{ req.id }}</span><span>{{ req.site_host }}</span><span>{{ req.channel }}</span><span>received {{ req.received_at.strftime('%Y-%m-%d %H:%M') }} UTC</span></div>
+{{ ui.request_stepper(req.status) }}
+{% if freeze %}<div class="banner">Site edit freeze: final consistency gate {{ freeze.holder }} is running on {{ req.site_host }}. Builders must not edit this site.</div>{% endif %}
+{% if req.status_reason %}<div class="note">{{ req.status_reason }}</div>{% endif %}
+
+<div class="grid2">
+  <div class="panel">
+    <h3 style="margin-top:0">Customer request</h3>
+    <div class="small muted">{{ req.customer or "Unknown customer" }} · {{ req.channel }} · received {{ req.received_at.strftime('%Y-%m-%d %H:%M') }} UTC · <a href="{{ req.site_url }}" target="_blank" rel="noopener">{{ req.site_url }}</a></div>
+    <pre>{{ req.raw_text }}</pre>
+    {% for a in req.attachments %}
+      {% if not a.key %}<div class="small muted">{{ a.filename }} — deleted by the retention policy</div>
+      {% elif a.media_type.startswith('image/') %}<a href="{{ signed(a.key) }}" target="_blank" style="display:inline-block;margin:8px 8px 0 0"><img class="crop" style="max-height:140px" src="{{ signed(a.key) }}" alt="{{ a.filename }}"></a>
+      {% else %}
+        <div class="small" style="margin-top:8px"><strong>Voice note</strong> {{ a.filename }} · <span class="badge {{ tone(a.transcript_status) }}">{{ a.transcript_status }}</span></div>
+        <audio controls preload="none" src="{{ signed(a.key) }}" style="width:100%;margin-top:8px"></audio>
+        {% if a.transcript %}<pre class="small">{{ a.transcript }}</pre>{% endif %}
+        {% if role == "care_lead" and a.transcript_status in ("unavailable", "pending") and req.status == "awaiting_transcript" %}
+          <form method="post" action="/requests/{{ req.id }}/transcript">
+            <input type="hidden" name="attachment_id" value="{{ a.id }}">
+            <label for="t_{{ a.id }}">Type what the customer says (planning starts when every voice note has a transcript)</label>
+            <textarea id="t_{{ a.id }}" name="text" required></textarea>
+            <button type="submit">Save transcript</button>
+          </form>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+    <div class="small muted">Site profile: {{ req.site_profile_id or "none (editing paths unknown — jobs need human recipes)" }}</div>
+  </div>
+  <div class="panel">
+    <h3 style="margin-top:0">Planner</h3>
+    <p class="small">{{ req.planner_notes or ("Planning…" if req.status == "parsing" else "—") }}</p>
+    {% set m = req.crawl_manifest %}
+    {% if m %}
+      <details><summary>Crawl manifest ({{ m.pages|length }} pages, {{ "complete" if m.complete else "incomplete" }})</summary>
+        <div class="small">Origin boundary: {{ m.origin_boundary }} · page limit {{ m.page_limit }} · sitemap {{ "found" if m.sitemap_found else "not found" }}</div>
+        <ul class="small">{% for p in m.pages %}<li>{{ p.final_url }} — {{ p.title }}</li>{% endfor %}</ul>
+        {% if m.excluded %}<div class="small">Excluded: {% for e in m.excluded %}{{ e.url }} ({{ e.rule }}) {% endfor %}</div>{% endif %}
+        {% if m.errors %}<div class="small">Errors: {% for e in m.errors %}{{ e.url }}: {{ e.error }} {% endfor %}</div>{% endif %}
+      </details>
+    {% endif %}
+    {% if role == "care_lead" and not req.closed_at %}
+    <details><summary>Re-plan with a clarification</summary>
+      <form method="post" action="/requests/{{ req.id }}/replan">
+        <label for="clar">Clarification (added to the request text)</label>
+        <textarea id="clar" name="clarification" placeholder="e.g. The new number is (555) 201-9900; update header and footer."></textarea>
+        <button class="secondary" type="submit">Re-plan</button>
+      </form>
+    </details>
+    {% endif %}
+  </div>
+</div>
+
+{% if req.requirements %}
+<h2>Requirement coverage</h2>
+<div class="panel">
+  <div class="row small" style="margin-bottom:8px">
+    {% if approval %}<span class="badge good">Approved by {{ approval.approved_by }} at {{ approval.approved_at.strftime('%H:%M') }} (scope r{{ approval.scope_revision }})</span>
+    {% elif last_approval %}<span class="badge warn">Approval out of date — requirements, mappings or job revisions changed</span>
+    {% else %}<span class="badge warn">Not approved</span>{% endif %}
+    <span class="muted">Scope revision r{{ req.scope_revision }}</span>
+  </div>
+  <table>
+    <thead><tr><th>Requirement</th><th>Source</th><th>Coverage</th><th></th></tr></thead>
+    <tbody>
+    {% for r in req.requirements %}{% set c = coverage[r.id] %}
+      <tr>
+        <td><span class="mono">{{ r.id }}</span> {{ r.text }}</td>
+        <td class="small muted">“{{ r.source }}”</td>
+        <td>
+          <span class="badge {{ 'good' if c.disposition == 'jobs' else ('neutral' if c.disposition == 'excluded' else 'warn') }}">{{ c.disposition }}</span>
+          {% for jid in c.jobs %}<div class="small"><a href="/jobs/{{ jid }}">{{ jobs_by_id[jid].key }}</a> r{{ jobs_by_id[jid].revision }}</div>{% endfor %}
+          {% if c.note %}<div class="small muted">{{ c.note }}</div>{% endif %}
+        </td>
+        <td style="min-width:220px">
+          {% if role == "care_lead" and not req.closed_at %}
+          <form method="post" action="/requests/{{ req.id }}/requirements/{{ r.id }}" class="small">
+            <select name="disposition">
+              <option value="jobs" {% if c.disposition=='jobs' %}selected{% endif %}>covered by jobs</option>
+              <option value="clarification" {% if c.disposition=='clarification' %}selected{% endif %}>needs clarification</option>
+              <option value="excluded" {% if c.disposition=='excluded' %}selected{% endif %}>excluded (reviewed)</option>
+            </select>
+            <input type="text" name="note" placeholder="Reason / note" value="{{ r.note if r.disposition in ('excluded','clarification') else '' }}">
+            <button class="secondary" type="submit">Save</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% if role == "care_lead" and not approval and not req.closed_at %}
+    <form method="post" action="/requests/{{ req.id }}/approve" style="margin-top:12px">
+      {% if unresolved %}<p class="small" style="color:var(--bad)">Unresolved: {{ unresolved|join(', ') }} — map, clarify (re-plan) or exclude with a reason first.</p>{% endif %}
+      <p class="small muted">Approving confirms you reviewed the original request and attachments as well as the planner's jobs. Before-evidence is captured next.</p>
+      <button class="cta" type="submit" {% if unresolved %}disabled{% endif %}>Approve coverage map</button>
+    </form>
+  {% endif %}
+</div>
+{% endif %}
+
+<h2>Jobs</h2>
+<div class="panel">
+  <table>
+    <thead><tr><th>Job</th><th>Target</th><th>Change</th><th>Recipe</th><th>Status</th></tr></thead>
+    <tbody>
+    {% for j in jobs %}{% set t = j.targets[0] %}
+      <tr>
+        <td><a href="/jobs/{{ j.id }}">{{ j.title or j.key }}</a><div class="small muted">{{ j.type }} · {{ j.scope }} · r{{ j.revision }}{% if j.depends_on %} · after {{ j.depends_on|join(', ') }}{% endif %}</div></td>
+        <td class="small">{{ t.target_description }}<br><span class="muted">{{ t.region }} on {{ t.page_urls|length }} page(s), {{ t.viewports|join(' + ') }}</span></td>
+        <td class="small"><span class="mono">{{ t.current_value }}</span> → <span class="mono">{{ t.desired_value }}</span>{% if t.desired_href %}<br><span class="muted">link → {{ t.desired_href }}</span>{% endif %}</td>
+        <td class="small">{% if j.recipe_snapshot %}{{ j.recipe_snapshot.recipe_id }} v{{ j.recipe_snapshot.version }}{% else %}<span style="color:var(--bad)">none</span>{% endif %}
+          {% if j.blockers %}<div style="color:var(--bad)">{{ j.blockers|length }} blocker(s)</div>{% endif %}</td>
+        <td><span class="badge {{ tone(j.status) }}">{{ j.status.replace('_',' ') }}</span>{% if j.attempts %}<div class="small muted">{{ j.attempts }} failed attempt(s)</div>{% endif %}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5" class="muted">{{ "Planning…" if req.status == "parsing" else "No jobs." }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<h2>Close request</h2>
+<div class="panel">
+  {% if req.closed_at %}
+    <p><span class="badge good">Closed {{ req.closed_at.strftime('%Y-%m-%d %H:%M') }} UTC</span></p>
+    <h3>Drafted done message {% if not req.done_message_valid %}<span class="badge bad">invalid</span>{% endif %}</h3>
+    {% if req.done_message %}<pre>{{ req.done_message }}</pre><p class="small muted">A human reviews and sends this with the after-crops from the evidence report.</p>{% else %}<p class="muted">Drafting…</p>{% endif %}
+  {% else %}
+    {% if req.done_message and not req.done_message_valid %}<p class="small" style="color:var(--bad)">The previous done message was invalidated when the request was reopened.</p>{% endif %}
+    {% if closure_problems %}
+      <p class="small muted">The final consistency gate becomes available when:</p>
+      <ul class="small">{% for p in closure_problems %}<li>{{ p }}</li>{% endfor %}</ul>
+    {% elif role == "care_lead" %}
+      <form method="post" action="/requests/{{ req.id }}/close">
+        <label><input type="checkbox" name="freeze_ack" value="yes"> Every participating builder has finished editing {{ req.site_host }} and acknowledged the edit freeze.</label>
+        <p class="small muted">Recaptures every affected page at every viewport, reruns the checks, rechecks fingerprints and closes atomically. Sequential captures cannot prove a single atomic WordPress snapshot; edits outside this tool are not locked.</p>
+        <button class="cta" type="submit">Run final consistency gate</button>
+      </form>
+    {% endif %}
+  {% endif %}
+  {% if runs %}
+  <h3>Closure runs</h3>
+  <table class="small"><thead><tr><th>Run</th><th>Outcome</th><th>Window</th><th>Reasons</th></tr></thead><tbody>
+  {% for r in runs %}<tr><td class="mono">{{ r.id }}</td><td><span class="badge {{ tone(r.outcome) }}">{{ r.outcome }}</span></td>
+    <td>{{ r.window_started_at.strftime('%H:%M:%S') if r.window_started_at else '—' }}–{{ r.finished_at.strftime('%H:%M:%S') if r.finished_at else '…' }}</td>
+    <td>{{ r.reasons|join('; ') }}</td></tr>{% endfor %}
+  </tbody></table>
+  {% endif %}
+</div>
+
+<details class="panel"><summary>Model calls (${{ "%.4f"|format(cost) }} total)</summary>
+  <table class="small"><thead><tr><th>Purpose</th><th>Model</th><th>Prompt</th><th>Tokens in/out</th><th>Images</th><th>Latency</th><th>Cost</th><th>OK</th></tr></thead><tbody>
+  {% for c in calls %}<tr><td>{{ c.purpose }}</td><td>{{ c.model }}</td><td>{{ c.prompt_version }}</td><td>{{ c.input_tokens }}/{{ c.output_tokens }}</td><td>{{ c.images }}</td><td>{{ c.latency_ms }} ms</td><td>${{ "%.4f"|format(c.cost_usd) }}</td><td>{{ "yes" if c.ok else c.error[:80] }}</td></tr>{% endfor %}
+  </tbody></table>
+</details>
+<details class="panel"><summary>Background tasks</summary>
+  <table class="small"><thead><tr><th>Kind</th><th>Key</th><th>Status</th><th>Executions</th><th>Last error</th></tr></thead><tbody>
+  {% for t in tasks %}<tr><td>{{ t.kind }}</td><td class="mono">{{ t.idempotency_key }}</td><td><span class="badge {{ tone(t.status) }}">{{ t.status }}</span></td><td>{{ t.executions }}/{{ t.max_executions }}</td><td>{{ (t.last_error or '')[-200:] }}</td></tr>{% endfor %}
+  </tbody></table>
+</details>
+{% endblock %}

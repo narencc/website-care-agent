@@ -1,0 +1,468 @@
+<title>Feluda Workflow Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; shared overview + job-lifecycle diagram, then a role switch (Care lead / Builder) with numbered stages and a button reference per stage. Tokens follow the Feluda app (feluda/templates/base.html). */
+:root{
+  --bg:#ffffff; --surface:#f1f4f7; --line:#dee3e9; --ink:#0a1317; --ink-2:#444950; --ink-3:#5d6c7b;
+  --lead:#0064e0; --lead-soft:#e6f0fd; --builder:#0b7a68; --builder-soft:#e3f4f0; --system:#5d6c7b; --system-soft:#eef1f4;
+  --good:#2b8f43; --good-soft:#e5f4e8; --warn:#a86b00; --warn-soft:#fdf3dc; --bad:#c8102e; --bad-soft:#fde8eb;
+  --btn:#0a1317; --btn-ink:#ffffff;
+  --sans:"Plus Jakarta Sans",ui-sans-serif,system-ui,"Helvetica Neue",Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1316; --surface:#172026; --line:#26323a; --ink:#e8eef2; --ink-2:#b9c4cc; --ink-3:#8c9aa5;
+  --lead:#5aa2ff; --lead-soft:#13263f; --builder:#3fc7ae; --builder-soft:#10302a; --system:#9aa8b3; --system-soft:#1c262d;
+  --good:#5cc976; --good-soft:#143020; --warn:#f2b84b; --warn-soft:#352a12; --bad:#ff6b80; --bad-soft:#3a161d;
+  --btn:#e8eef2; --btn-ink:#0e1316; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0e1316; --surface:#172026; --line:#26323a; --ink:#e8eef2; --ink-2:#b9c4cc; --ink-3:#8c9aa5;
+  --lead:#5aa2ff; --lead-soft:#13263f; --builder:#3fc7ae; --builder-soft:#10302a; --system:#9aa8b3; --system-soft:#1c262d;
+  --good:#5cc976; --good-soft:#143020; --warn:#f2b84b; --warn-soft:#352a12; --bad:#ff6b80; --bad-soft:#3a161d;
+  --btn:#e8eef2; --btn-ink:#0e1316; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.6 var(--sans);letter-spacing:-.1px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding-block:40px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{text-wrap:balance;letter-spacing:-.4px;line-height:1.2}
+h1{font-size:clamp(30px,5vw,44px);font-weight:800;margin:6px 0 12px}
+h2{font-size:26px;font-weight:800;margin:56px 0 8px}
+h3{font-size:19px;font-weight:700;margin:0}
+p{margin:0 0 12px;max-width:68ch}
+.eyebrow{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink-3)}
+.lede{font-size:18px;color:var(--ink-2)}
+.muted{color:var(--ink-3)}
+.small{font-size:14px}
+code,.mono{font-family:var(--mono);font-size:.88em}
+a{color:var(--lead)}
+
+/* role chips */
+.who{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:2px 10px;border-radius:999px;white-space:nowrap}
+.who::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.who.lead{color:var(--lead);background:var(--lead-soft)}
+.who.builder{color:var(--builder);background:var(--builder-soft)}
+.who.system{color:var(--system);background:var(--system-soft)}
+
+/* app-like button and status chips */
+.b{display:inline-block;font-weight:700;font-size:13.5px;line-height:1.2;padding:6px 14px;border-radius:999px;background:var(--btn);color:var(--btn-ink);white-space:nowrap}
+.b.sec{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.st{display:inline-block;font-size:12.5px;font-weight:600;padding:1px 9px;border-radius:999px;background:var(--system-soft);color:var(--ink-2);white-space:nowrap}
+.st.good{background:var(--good-soft);color:var(--good)}
+.st.warn{background:var(--warn-soft);color:var(--warn)}
+.st.bad{background:var(--bad-soft);color:var(--bad)}
+
+/* roles intro */
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:28px}
+.role{border:1px solid var(--line);border-radius:16px;padding:20px;display:grid;gap:8px;align-content:start}
+.role h3{display:flex;align-items:center;gap:10px}
+.role ul{margin:0;padding-left:18px;color:var(--ink-2);font-size:15px}
+
+/* swimlane overview */
+.lanes{overflow-x:auto;margin-top:16px;border:1px solid var(--line);border-radius:16px}
+.lanes table{border-collapse:collapse;width:100%;min-width:760px;font-size:14px}
+.lanes th,.lanes td{border-bottom:1px solid var(--line);padding:12px 14px;vertical-align:top;text-align:left}
+.lanes tr:last-child td{border-bottom:0}
+.lanes thead th{background:var(--surface);font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink-3)}
+.lanes td.n{font-family:var(--mono);color:var(--ink-3);width:36px}
+.lanes td.lead{background:color-mix(in srgb,var(--lead-soft) 55%,transparent)}
+.lanes td.builder{background:color-mix(in srgb,var(--builder-soft) 55%,transparent)}
+.lanes td.system{background:color-mix(in srgb,var(--system-soft) 55%,transparent)}
+.lanes td.empty{color:var(--line)}
+
+/* diagram */
+.diagram{overflow-x:auto;margin-top:16px;border:1px solid var(--line);border-radius:16px;padding:12px;background:var(--surface)}
+.diagram svg{display:block;min-width:900px;width:100%;height:auto}
+.diagram text{font-family:var(--sans);fill:var(--ink)}
+.diagram .lbl{font-size:12px;fill:var(--ink-2)}
+.diagram .node-lead{fill:var(--lead-soft);stroke:var(--lead)}
+.diagram .node-builder{fill:var(--builder-soft);stroke:var(--builder)}
+.diagram .node-system{fill:var(--system-soft);stroke:var(--system)}
+.diagram .node-good{fill:var(--good-soft);stroke:var(--good)}
+.diagram .node-bad{fill:var(--bad-soft);stroke:var(--bad)}
+.diagram .node-warn{fill:var(--warn-soft);stroke:var(--warn)}
+.diagram rect{stroke-width:1.5}
+.diagram .edge{stroke:var(--ink-3);stroke-width:1.5;fill:none}
+.diagram .arrow{fill:var(--ink-3)}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+
+/* role switch */
+.switch{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:12px;margin-top:48px;border-bottom:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.switch button{font:700 15px var(--sans);padding:10px 20px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.switch button[aria-selected="true"].lead{background:var(--lead);border-color:var(--lead);color:#fff}
+.switch button[aria-selected="true"].builder{background:var(--builder);border-color:var(--builder);color:#fff}
+.switch button:focus-visible{outline:3px solid var(--lead);outline-offset:2px}
+
+/* stages */
+.stages{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:20px;counter-reset:stage}
+.stage{counter-increment:stage;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.stage-head{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center;padding:18px 20px;background:var(--surface)}
+.stage-head::before{content:counter(stage);grid-row:span 2;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;background:var(--accent-role)}
+.stage-head .where{font-size:13px;color:var(--ink-3)}
+.stage-body{padding:16px 20px 20px;display:grid;gap:14px}
+.stage-body > p{margin:0}
+.btns{display:grid;gap:0;border-top:1px solid var(--line)}
+.btnrow{display:grid;grid-template-columns:minmax(170px,230px) 1fr;gap:6px 18px;padding:14px 0;border-bottom:1px solid var(--line)}
+.btnrow:last-child{border-bottom:0}
+.btnrow > div{min-width:0}
+.btnrow .what{font-size:15px}
+.btnrow .when{font-size:13.5px;color:var(--ink-3);margin-top:4px}
+.after{font-size:14px;padding:10px 14px;border-radius:10px;background:var(--system-soft);color:var(--ink-2)}
+.after strong{color:var(--ink)}
+#panel-lead{--accent-role:var(--lead)}
+#panel-builder{--accent-role:var(--builder)}
+
+/* reference tables */
+.ref{overflow-x:auto;border:1px solid var(--line);border-radius:16px;margin-top:16px}
+.ref table{border-collapse:collapse;width:100%;font-size:14.5px}
+.ref th,.ref td{padding:11px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.ref thead th{background:var(--surface);font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink-3)}
+.ref tr:last-child td{border-bottom:0}
+.ref td:first-child{white-space:nowrap}
+
+.note{border-left:3px solid var(--warn);background:var(--warn-soft);padding:12px 16px;border-radius:0 10px 10px 0;font-size:14.5px;color:var(--ink)}
+
+@media (max-width:640px){
+  .btnrow{grid-template-columns:1fr}
+  .ref td:first-child{white-space:normal}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">Feluda Care Agent · how the work flows</div>
+  <h1>Feluda workflow guide</h1>
+  <p class="lede">A customer asks for a website change. A Care lead turns it into an approved plan, a builder makes the edit in WordPress, and Feluda checks the live site before anything is called done. This page shows each person's steps and what every button does.</p>
+
+  <div class="roles">
+    <div class="role">
+      <h3><span class="who lead">Care lead</span></h3>
+      <p class="small muted" style="margin:0">Login <code>care.lead</code> in the dev seed. Owns the request from start to finish.</p>
+      <ul>
+        <li>Logs requests and checks the plan Feluda drafts</li>
+        <li>Approves what will be built</li>
+        <li>Decides cases Feluda can't judge</li>
+        <li>Runs the final check and closes the request</li>
+      </ul>
+    </div>
+    <div class="role">
+      <h3><span class="who builder">Builder</span></h3>
+      <p class="small muted" style="margin:0">Logins <code>builder.one</code>, <code>builder.two</code>. Owns individual jobs.</p>
+      <ul>
+        <li>Picks up jobs that are Ready</li>
+        <li>Edits the WordPress site by following the steps</li>
+        <li>Clicks Mark done so Feluda verifies the change</li>
+        <li>Fixes and resubmits if verification fails</li>
+      </ul>
+    </div>
+    <div class="role">
+      <h3><span class="who system">Feluda (automatic)</span></h3>
+      <p class="small muted" style="margin:0">Runs in the background; nobody clicks for these.</p>
+      <ul>
+        <li>Transcribes voice notes, crawls the site, plans jobs</li>
+        <li>Takes "before" screenshots of each target</li>
+        <li>Captures the live site and judges each change</li>
+        <li>Drafts the done message for the customer</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="small muted" style="margin-top:20px">Three screens matter: the <strong>Queue</strong> (home page, list of requests), the <strong>Request page</strong> (one customer request, its requirements and jobs), and the <strong>Job card</strong> (one change on the site). A request is split into one or more jobs.</p>
+
+  <h2>End to end, in order</h2>
+  <p class="muted">Read across each row to see who acts and what Feluda does in response.</p>
+  <div class="lanes">
+    <table>
+      <thead><tr><th></th><th>Care lead</th><th>Builder</th><th>Feluda</th></tr></thead>
+      <tbody>
+        <tr><td class="n">1</td><td class="lead">Fills in the New customer request form on the Queue and clicks <span class="b">Plan this request</span></td><td class="empty">·</td><td class="system">Transcribes voice notes, crawls the site, splits the request into requirements and jobs. Request becomes <span class="st warn">needs review</span></td></tr>
+        <tr><td class="n">2</td><td class="lead">Checks each requirement is covered, corrects jobs, attaches approved images, then clicks <span class="b">Approve coverage map</span></td><td class="empty">·</td><td class="system">Takes "before" screenshots of every target. Jobs become <span class="st">ready</span></td></tr>
+        <tr><td class="n">3</td><td class="empty">·</td><td class="builder">Opens a ready job and clicks <span class="b">Start this job</span>, then edits WordPress following the Steps</td><td class="system">Locks the original "before" screenshots. Job is <span class="st">with builder</span></td></tr>
+        <tr><td class="n">4</td><td class="empty">·</td><td class="builder">Clicks <span class="b">Mark done</span></td><td class="system">Captures the live site on desktop and mobile and runs every check. Job ends <span class="st good">passed</span>, <span class="st bad">failed</span>, <span class="st warn">needs human</span> or <span class="st warn">verification error</span></td></tr>
+        <tr><td class="n">5</td><td class="lead">If a job <span class="st warn">needs human</span>: clicks <span class="b">Record decision</span></td><td class="builder">If a job <span class="st bad">failed</span>: fixes the site and clicks <span class="b">Mark done</span> again</td><td class="system">Re-verifies each new attempt</td></tr>
+        <tr><td class="n">6</td><td class="lead">When every job has passed, ticks the freeze box and clicks <span class="b">Run final consistency gate</span></td><td class="builder">Stops editing the site while the freeze banner shows</td><td class="system">Rechecks every page at every viewport, closes the request as <span class="st good">done</span> and drafts the done message</td></tr>
+        <tr><td class="n">7</td><td class="lead">Opens <span class="b sec">Evidence report</span> and sends the done message with the after-screenshots to the customer</td><td class="empty">·</td><td class="empty">·</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Life of a job</h2>
+  <p class="muted">Every job moves through these statuses. The colour shows whose move it is next. Labels on the arrows are the buttons or events that move it. Arrows leaving <strong>needs human</strong> are the Care lead's <em>Record decision</em> choices.</p>
+  <div class="diagram" role="img" aria-label="Job status diagram: needs review to ready (Care lead approves) to with builder (Start this job) to queued (Mark done) to verifying to passed. From verifying it can also go to failed, needs human, or verification error.">
+    <svg viewBox="0 0 1020 360" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="arrow" d="M0,0 L10,5 L0,10 z"/></marker>
+      </defs>
+      <!-- main row y=60..104 -->
+      <rect class="node-lead" x="10" y="60" width="140" height="44" rx="22"/><text x="80" y="87" text-anchor="middle" font-weight="700" font-size="14">needs review</text>
+      <rect class="node-builder" x="200" y="60" width="140" height="44" rx="22"/><text x="270" y="87" text-anchor="middle" font-weight="700" font-size="14">ready</text>
+      <rect class="node-builder" x="390" y="60" width="140" height="44" rx="22"/><text x="460" y="87" text-anchor="middle" font-weight="700" font-size="14">with builder</text>
+      <rect class="node-system" x="580" y="60" width="120" height="44" rx="22"/><text x="640" y="87" text-anchor="middle" font-weight="700" font-size="14">queued</text>
+      <rect class="node-system" x="730" y="60" width="120" height="44" rx="22"/><text x="790" y="87" text-anchor="middle" font-weight="700" font-size="14">verifying</text>
+      <rect class="node-good" x="880" y="60" width="110" height="44" rx="22"/><text x="935" y="87" text-anchor="middle" font-weight="700" font-size="14">passed</text>
+
+      <line class="edge" x1="150" y1="82" x2="198" y2="82" marker-end="url(#ah)"/>
+      <text class="lbl" x="175" y="40" text-anchor="middle">Approve coverage map</text><text class="lbl" x="175" y="54" text-anchor="middle">+ before captured</text>
+      <line class="edge" x1="340" y1="82" x2="388" y2="82" marker-end="url(#ah)"/>
+      <text class="lbl" x="365" y="48" text-anchor="middle">Start this job</text>
+      <line class="edge" x1="530" y1="82" x2="578" y2="82" marker-end="url(#ah)"/>
+      <text class="lbl" x="555" y="48" text-anchor="middle">Mark done</text>
+      <line class="edge" x1="700" y1="82" x2="728" y2="82" marker-end="url(#ah)"/>
+      <line class="edge" x1="850" y1="82" x2="878" y2="82" marker-end="url(#ah)"/>
+      <text class="lbl" x="866" y="48" text-anchor="middle">all checks pass</text>
+
+      <!-- outcomes row y=240..284 -->
+      <rect class="node-bad" x="390" y="240" width="140" height="44" rx="22"/><text x="460" y="267" text-anchor="middle" font-weight="700" font-size="14">failed</text>
+      <rect class="node-lead" x="600" y="240" width="150" height="44" rx="22"/><text x="675" y="267" text-anchor="middle" font-weight="700" font-size="14">needs human</text>
+      <rect class="node-warn" x="800" y="240" width="190" height="44" rx="22"/><text x="895" y="267" text-anchor="middle" font-weight="700" font-size="14">verification error</text>
+
+      <path class="edge" d="M770,104 C740,170 560,170 500,238" marker-end="url(#ah)"/>
+      <text class="lbl" x="560" y="186">a check failed</text>
+      <path class="edge" d="M790,104 L700,238" marker-end="url(#ah)"/>
+      <text class="lbl" x="748" y="200">judge unsure</text>
+      <path class="edge" d="M810,104 L880,238" marker-end="url(#ah)"/>
+      <text class="lbl" x="856" y="165">capture broke</text>
+
+      <!-- returns -->
+      <path class="edge" d="M430,240 L430,106" marker-end="url(#ah)"/>
+      <text class="lbl" x="422" y="170" text-anchor="end">fix site, Mark done again</text>
+      <path class="edge" d="M640,284 C620,340 120,340 80,106" marker-end="url(#ah)"/>
+      <text class="lbl" x="330" y="352" text-anchor="middle">send back to review</text>
+      <path class="edge" d="M620,262 L532,262" marker-end="url(#ah)"/>
+      <text class="lbl" x="576" y="232" text-anchor="middle">mark failed</text>
+      <path class="edge" d="M990,262 C1018,262 1012,20 970,20 L640,20 L640,58" marker-end="url(#ah)"/>
+      <text class="lbl" x="800" y="14" text-anchor="middle">Retry verification</text>
+    </svg>
+  </div>
+  <div class="legend">
+    <span class="who lead">Care lead acts next</span>
+    <span class="who builder">Builder acts next</span>
+    <span class="who system">Feluda is working</span>
+  </div>
+  <p class="small muted" style="margin-top:12px">Not drawn: <em>Record decision → return to builder</em> sends a needs-human job back to <strong>with builder</strong>. Saving <em>Correct this job</em> from almost any status sends the job back to <strong>needs review</strong>. Nobody can mark a job passed by hand; only a verification can.</p>
+
+  <!-- role switch -->
+  <div class="switch" role="tablist" aria-label="Choose a role">
+    <button id="tab-lead" class="lead" role="tab" aria-selected="true" aria-controls="panel-lead">Care lead workflow</button>
+    <button id="tab-builder" class="builder" role="tab" aria-selected="false" aria-controls="panel-builder">Builder workflow</button>
+  </div>
+
+  <!-- ================= CARE LEAD ================= -->
+  <section id="panel-lead" role="tabpanel" aria-labelledby="tab-lead">
+    <h2 style="margin-top:24px">Care lead workflow</h2>
+    <p class="muted">Seven stages. The Queue's <strong>New request</strong> button and the <strong>Metrics</strong> tab only appear for Care leads.</p>
+    <ol class="stages">
+
+      <li class="stage">
+        <div class="stage-head"><h3>Log the customer's request</h3><div class="where">Queue (home page) · bottom of the page</div></div>
+        <div class="stage-body">
+          <p>Paste the request exactly as the customer sent it. Email and ticket systems can also create requests automatically, so some will already be in the queue.</p>
+          <div class="btns">
+            <div class="btnrow"><div><span class="b" style="background:var(--bg);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)">New request</span></div><div><div class="what">Scrolls down to the New customer request form. It does not create anything by itself.</div></div></div>
+            <div class="btnrow"><div><span class="b">Plan this request</span></div><div><div class="what">Creates the request from the form: website URL (required), customer, channel (ticket, email or voice), request text, and optional screenshots or voice notes. Opens the new Request page.</div><div class="when">Feluda then transcribes any voice notes, crawls the site and drafts requirements and jobs. The status moves through <span class="st">transcribing</span> and <span class="st">parsing</span> to <span class="st warn">needs review</span>, or to <span class="st bad">plan failed</span>.</div></div></div>
+          </div>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage-head"><h3>Unblock planning, if it stalls</h3><div class="where">Request page · Customer request and Planner panels</div></div>
+        <div class="stage-body">
+          <div class="btns">
+            <div class="btnrow"><div><span class="b">Save transcript</span></div><div><div class="what">Type what the customer says in a voice note. Planning starts once every voice note has text.</div><div class="when">Only shown when the request is <span class="st warn">awaiting transcript</span> because automatic transcription failed.</div></div></div>
+            <div class="btnrow"><div><span class="b sec">Re-plan</span></div><div><div class="what">Inside "Re-plan with a clarification". Adds your clarification to the request text and runs the planner again from scratch.</div><div class="when">Use it when the status is <span class="st bad">plan failed</span>, when the customer's wording was vague, or after you get an answer to a requirement marked "needs clarification".</div></div></div>
+          </div>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage-head"><h3>Review requirement coverage</h3><div class="where">Request page · Requirement coverage table and Jobs table</div></div>
+        <div class="stage-body">
+          <p>Feluda lists each thing the customer asked for (R1, R2…) with the words it came from. Every requirement must be covered by a job or deliberately excluded before you can approve.</p>
+          <div class="btns">
+            <div class="btnrow"><div><span class="b sec">Save</span> <span class="small muted">(per row)</span></div><div><div class="what">Records your decision for one requirement: <em>covered by jobs</em>, <em>needs clarification</em>, or <em>excluded (reviewed)</em>, plus a note. Exclusions need a reason and appear in the evidence report.</div><div class="when">Any change makes an earlier approval out of date, so you will need to approve again.</div></div></div>
+            <div class="btnrow"><div><span class="small"><strong>Job title link</strong></span></div><div><div class="what">Opens that job's card so you can check the exact element, the current → desired value, the pages and viewports, and the builder steps.</div><div class="when">A job showing "blocker(s)" or "Recipe: none" will not become ready until you correct it.</div></div></div>
+          </div>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage-head"><h3>Correct jobs and attach images</h3><div class="where">Job card · "Correct this job" and "Approved replacement image"</div></div>
+        <div class="stage-body">
+          <div class="btns">
+            <div class="btnrow"><div><span class="b">Save correction</span></div><div><div class="what">Inside "Correct this job". Edits the job: title, recipe, current and desired value, links, region, element type, page URLs, desktop/mobile, "old value must be absent", menu order and known exclusions. A reason is required and logged.</div><div class="when">Creates a new revision (r2, r3…) and sends the job back to <span class="st warn">needs review</span>, so the coverage map must be approved again. On a closed request it reopens the request and voids the done message.</div></div></div>
+            <div class="btnrow"><div><span class="b sec">Use this image</span></div><div><div class="what">Uploads the customer's approved replacement image (PNG, JPEG or WebP) for an image-swap or logo job.</div><div class="when">Image jobs cannot become ready without an approved image. Needs re-approval afterwards.</div></div></div>
+            <div class="btnrow"><div><span class="b sec">Draft image</span></div><div><div class="what">Asks Muse Image to generate a candidate from your prompt. Use it only when the customer asked for new visuals.</div><div class="when">The draft appears below with its own buttons.</div></div></div>
+            <div class="btnrow"><div><span class="b">Approve</span> <span class="b sec">Reject</span></div><div><div class="what">On a Muse Image draft. Approve makes it the approved replacement image (re-approval needed). Reject discards it.</div></div></div>
+          </div>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage-head"><h3>Approve the plan</h3><div class="where">Request page · bottom of Requirement coverage</div></div>
+        <div class="stage-body">
+          <div class="btns">
+            <div class="btnrow"><div><span class="b">Approve coverage map</span></div><div><div class="what">Confirms you checked the original request, its attachments and the planned jobs. Feluda then captures "before" screenshots of every target; each job without blockers becomes <span class="st">ready</span> for builders.</div><div class="when">Greyed out while any requirement is unresolved; the red line above it names which. If the before-capture can't find the target uniquely, that job goes to <span class="st warn">needs human</span>.</div></div></div>
+          </div>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage-head"><h3>Handle exceptions while builders work</h3><div class="where">Job card · primary action panel (top)</div></div>
+        <div class="stage-body">
+          <p>The Queue's <strong>Stuck</strong> column links straight to jobs that need you.</p>
+          <div class="btns">
+            <div class="btnrow"><div><span class="b">Record decision</span></div><div><div class="what">Resolves a <span class="st warn">needs human</span> job. Pick one decision and write a note (required, shown to the builder):<br>• <em>Change is wrong, return to builder</em> → job goes back to the builder<br>• <em>Mark failed with my note</em> → job shows as failed; the builder fixes and resubmits<br>• <em>Scope/target problem, send back to review</em> → job returns to needs review for you to correct</div><div class="when">There is deliberately no "mark passed" option. The first two are only allowed after the builder has started.</div></div></div>
+            <div class="btnrow"><div><span class="b sec">Recapture baseline</span></div><div><div class="what">Takes the "before" screenshots again, for example after the target couldn't be found or the capture timed out.</div><div class="when">Only before the builder starts; after that the original baseline is kept.</div></div></div>
+            <div class="btnrow"><div><span class="b">Retry verification</span></div><div><div class="what">Reruns a verification that broke for technical reasons (site unreachable, browser error). Builders can click it too.</div><div class="when">Only on <span class="st warn">verification error</span>. This is not a judgement on the change.</div></div></div>
+          </div>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage-head"><h3>Close and report to the customer</h3><div class="where">Request page · Close request · and the Evidence report</div></div>
+        <div class="stage-body">
+          <p>Until every job has passed, this section lists what is still missing instead of the button.</p>
+          <div class="btns">
+            <div class="btnrow"><div><span class="small"><strong>Freeze checkbox</strong></span><br><span class="b">Run final consistency gate</span></div><div><div class="what">Tick the box to confirm every builder has finished editing, then click. Feluda freezes edits on that site, recaptures every affected page on desktop and mobile, reruns all checks, and closes the request as <span class="st good">done</span>. It then drafts the done message.</div><div class="when">Shown when the request is <span class="st good">ready to close</span>. If something changed on the site meanwhile, the affected job goes back and the request stays open. Builders see a freeze banner and can't start or submit until it ends.</div></div></div>
+            <div class="btnrow"><div><span class="b sec">Evidence report</span></div><div><div class="what">Top of the Request page. One page per request: requirements, each job's verdict, every check, and before/after screenshots.</div></div></div>
+            <div class="btnrow"><div><span class="b">Print / PDF</span> <span class="b sec">JSON export</span></div><div><div class="what">On the evidence report. Save it as a PDF to send with the done message, or download the same data as JSON.</div><div class="when">Feluda never emails the customer. You review and send the done message yourself.</div></div></div>
+          </div>
+        </div>
+      </li>
+    </ol>
+
+    <h3 style="margin-top:32px">Also available to Care leads</h3>
+    <p class="small"><strong>Metrics</strong> (top navigation): request volume, pass rates and model cost across the customers you can access. The <strong>Model calls</strong> and <strong>Background tasks</strong> panels at the foot of a Request page show what Feluda ran and anything that errored.</p>
+  </section>
+
+  <!-- ================= BUILDER ================= -->
+  <section id="panel-builder" role="tabpanel" aria-labelledby="tab-builder" hidden>
+    <h2 style="margin-top:24px">Builder workflow</h2>
+    <p class="muted">Six stages. Builders see the same Queue and Request pages but without the planning and approval controls.</p>
+    <ol class="stages">
+
+      <li class="stage">
+        <div class="stage-head"><h3>Find a job to work on</h3><div class="where">Queue → Request page → Jobs table</div></div>
+        <div class="stage-body">
+          <p>Open a request whose status is <span class="st">with builder</span>, then open a job marked <span class="st">ready</span>. Jobs in <span class="st warn">needs review</span> are still with the Care lead; you can't start them yet.</p>
+          <div class="after"><strong>Tip:</strong> the Queue's Stuck column links straight to jobs that failed or need attention.</div>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage-head"><h3>Read the job card before touching the site</h3><div class="where">Job card</div></div>
+        <div class="stage-body">
+          <div class="btns">
+            <div class="btnrow"><div><strong class="small">Exact element</strong></div><div><div class="what">What to change: current value → desired value, the link, the pages, and desktop/mobile. The "Before" screenshot shows the exact spot.</div></div></div>
+            <div class="btnrow"><div><strong class="small">Steps</strong></div><div><div class="what">Click-by-click WordPress instructions from a validated recipe for this site. "Recipe snapshot" shows the raw template and values.</div></div></div>
+            <div class="btnrow"><div><strong class="small">Acceptance criteria</strong></div><div><div class="what">Exactly what Feluda will check after you click Mark done. Items tagged <em>required</em> must all pass.</div></div></div>
+            <div class="btnrow"><div><strong class="small">Exclusions, Depends on</strong></div><div><div class="what">Places you should not change, and jobs that must pass before this one can start.</div></div></div>
+            <div class="btnrow"><div><span class="b">Download approved image</span></div><div><div class="what">On image and logo jobs. The image to upload to WordPress. Verification compares images visually, so WordPress renaming or resizing it is fine; a different or stretched image fails.</div></div></div>
+          </div>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage-head"><h3>Start the job</h3><div class="where">Job card · primary action panel</div></div>
+        <div class="stage-body">
+          <div class="btns">
+            <div class="btnrow"><div><span class="b">Start this job</span></div><div><div class="what">Assigns the job to you and moves it to <span class="st">with builder</span>. Locks the original "before" screenshots so later comparisons use them.</div><div class="when">Greyed out if you're logged in as a Care lead or a site freeze is running. Refused with a message if a prerequisite job hasn't passed, the Care lead's approval is out of date, or another job is already editing the same shared header or footer.</div></div></div>
+          </div>
+          <div class="after"><strong>Side effect on shared areas:</strong> starting a job on a header, footer or menu sends other passed jobs on that same area back for re-verification, since your edit could affect them.</div>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage-head"><h3>Make the change in WordPress</h3><div class="where">Outside Feluda · the customer's WordPress admin</div></div>
+        <div class="stage-body">
+          <p>Follow the Steps. Check the public site, not just the editor, on every listed page and on mobile if listed. Clear any cache so the public page shows the change.</p>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage-head"><h3>Submit for verification</h3><div class="where">Job card · primary action panel</div></div>
+        <div class="stage-body">
+          <div class="btns">
+            <div class="btnrow"><div><span class="b">Mark done</span></div><div><div class="what">Tells Feluda the public site is ready. It captures each listed page at each viewport, checks the target text, link, image or menu order, confirms the old value is gone where required, submits contact forms to the test inbox, and flags changes outside the target. The page refreshes itself while <span class="st">verifying</span>.</div><div class="when">Available while the job is <span class="st">with builder</span> or <span class="st bad">failed</span>. Clicking twice is safe; it reuses the same submission. Greyed out during a site freeze.</div></div></div>
+          </div>
+        </div>
+      </li>
+
+      <li class="stage">
+        <div class="stage-head"><h3>Act on the result</h3><div class="where">Job card · Latest verification</div></div>
+        <div class="stage-body">
+          <div class="ref" style="margin-top:0">
+            <table>
+              <thead><tr><th>Result</th><th>What it means</th><th>What you do</th></tr></thead>
+              <tbody>
+                <tr><td><span class="st good">passed</span></td><td>Every required check passed.</td><td>Nothing. The Care lead closes the request once all jobs pass.</td></tr>
+                <tr><td><span class="st bad">failed</span></td><td>At least one check failed. Each check lists why, with before/after screenshots.</td><td>Fix the site and click <span class="b">Mark done</span> again. From the second failure, Feluda adds a diagnosis note.</td></tr>
+                <tr><td><span class="st warn">needs human</span></td><td>Feluda couldn't decide (e.g. the visual judge was unsure).</td><td>Wait. The Care lead will return it to you with a note, fail it, or send it back to review.</td></tr>
+                <tr><td><span class="st warn">verification error</span></td><td>A technical problem stopped the check. It says nothing about your change.</td><td>Click <span class="b">Retry verification</span>.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="btns">
+            <div class="btnrow"><div><span class="b">Save correction</span></div><div><div class="what">Builders can also edit the job (for example if the "current value" doesn't match what's really on the site). A reason is required.</div><div class="when">This sends the job back to <span class="st warn">needs review</span>; the Care lead must re-approve before you can continue. Tell them why.</div></div></div>
+          </div>
+          <div class="note">When the yellow <strong>Site edit freeze</strong> banner appears, the final check is running. Don't edit that site until it disappears.</div>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <h2>Request statuses on the Queue</h2>
+  <p class="muted">A request's status is worked out from its jobs. The worst job wins: one job needing a human makes the whole request "needs human".</p>
+  <div class="ref">
+    <table>
+      <thead><tr><th>Status</th><th>Meaning</th><th>Who acts</th></tr></thead>
+      <tbody>
+        <tr><td><span class="st">transcribing</span></td><td>Voice notes are being transcribed.</td><td><span class="who system">Feluda</span></td></tr>
+        <tr><td><span class="st warn">awaiting transcript</span></td><td>Transcription failed; a person must type it.</td><td><span class="who lead">Care lead</span></td></tr>
+        <tr><td><span class="st">parsing</span></td><td>Crawling the site and planning jobs.</td><td><span class="who system">Feluda</span></td></tr>
+        <tr><td><span class="st bad">plan failed</span></td><td>The planner couldn't produce a plan. Re-plan with a clarification.</td><td><span class="who lead">Care lead</span></td></tr>
+        <tr><td><span class="st warn">needs review</span></td><td>Coverage not approved yet, or a job was corrected.</td><td><span class="who lead">Care lead</span></td></tr>
+        <tr><td><span class="st">with builder</span></td><td>Jobs are ready or in progress.</td><td><span class="who builder">Builder</span></td></tr>
+        <tr><td><span class="st">verifying</span></td><td>At least one job is being checked.</td><td><span class="who system">Feluda</span></td></tr>
+        <tr><td><span class="st warn">needs human</span></td><td>A job needs a decision or hit a verification error.</td><td><span class="who lead">Care lead</span></td></tr>
+        <tr><td><span class="st good">ready to close</span></td><td>Every job passed. Waiting for the final consistency gate.</td><td><span class="who lead">Care lead</span></td></tr>
+        <tr><td><span class="st">closing</span></td><td>The final gate is running and the site is frozen.</td><td><span class="who system">Feluda</span></td></tr>
+        <tr><td><span class="st good">done</span></td><td>Closed with evidence. The done message is drafted.</td><td><span class="who lead">Care lead</span> sends it</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Why is this button greyed out?</h2>
+  <div class="ref">
+    <table>
+      <thead><tr><th>Button</th><th>Usual reasons</th></tr></thead>
+      <tbody>
+        <tr><td><span class="b">Approve coverage map</span></td><td>A requirement is still "needs clarification" or has no job. The red line above the button names it.</td></tr>
+        <tr><td><span class="b">Start this job</span></td><td>You're logged in as a Care lead; a site freeze is running; a prerequisite job hasn't passed; the approval went out of date after a correction; another job is editing the same shared area.</td></tr>
+        <tr><td><span class="b">Mark done</span></td><td>You're logged in as a Care lead; a site freeze is running; the job isn't started yet.</td></tr>
+        <tr><td><span class="b">Run final consistency gate</span></td><td>Not every job has passed, or approval is out of date. The list above the button says which. The freeze checkbox must be ticked.</td></tr>
+        <tr><td><span class="b">Retry verification</span></td><td>Only appears on a verification error, and not during a site freeze.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted" style="margin-top:24px">Based on the Feluda code as of commit d9dddf4: <code>feluda/web.py</code>, <code>feluda/service.py</code>, <code>feluda/states.py</code> and the page templates.</p>
+</div>
+
+<script>
+(function(){
+  var tabs={lead:document.getElementById('tab-lead'),builder:document.getElementById('tab-builder')};
+  var panels={lead:document.getElementById('panel-lead'),builder:document.getElementById('panel-builder')};
+  function show(k){
+    Object.keys(tabs).forEach(function(x){
+      var on=x===k; tabs[x].setAttribute('aria-selected',on?'true':'false'); panels[x].hidden=!on;
+    });
+  }
+  tabs.lead.addEventListener('click',function(){show('lead')});
+  tabs.builder.addEventListener('click',function(){show('builder')});
+  var h=(location.hash||'').slice(1);
+  if(h==='builder')show('builder');
+})();
+</script>

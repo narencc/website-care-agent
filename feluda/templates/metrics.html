@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Metrics · Feluda{% endblock %}
+{% macro secs(v) %}{{ "—" if v is none else ("%.1fs"|format(v)) }}{% endmacro %}
+{% macro usd(v) %}{{ "—" if v is none else ("$%.4f"|format(v)) }}{% endmacro %}
+{% block content %}
+<div class="page-head"><h1>Metrics</h1><a class="btn ghost" href="/metrics.json">Export JSON</a></div>
+<p class="small muted" style="max-width:760px;margin-bottom:32px">Accounts you can see only. Latency runs from Mark done to the committed verdict (queueing and retries included); final-gate verdicts are excluded. Every figure shows its count; small samples say little.</p>
+
+<div class="grid3">
+  <div class="stat"><div class="label">Verification latency (median / p95)</div>
+    <div class="value">{{ secs(m.latency_s.all.median) }} / {{ secs(m.latency_s.all.p95) }}</div>
+    <div class="meta">n={{ m.latency_s.all.n }} · target median &lt; {{ m.latency_s.target_median_s }}s</div></div>
+  <div class="stat"><div class="label">Model cost per request (median / p95)</div>
+    <div class="value">{{ usd(m.cost_usd.per_request.median) }} / {{ usd(m.cost_usd.per_request.p95) }}</div>
+    <div class="meta">n={{ m.cost_usd.per_request.n }} · target &lt; ${{ m.cost_usd.target_per_request }} · total ${{ "%.4f"|format(m.cost_usd.total) }}</div></div>
+  <div class="stat"><div class="label">Model cost per verification attempt (median / p95)</div>
+    <div class="value">{{ usd(m.cost_usd.per_attempt.median) }} / {{ usd(m.cost_usd.per_attempt.p95) }}</div>
+    <div class="meta">n={{ m.cost_usd.per_attempt.n }}</div></div>
+</div>
+
+<h2>Outcomes</h2>
+<div class="panel">
+  <p class="small">{{ m.verdicts }} committed verdicts across {{ m.requests }} requests ({{ m.closed_requests }} closed).
+  Human-review rate {{ "—" if m.rates.human_review is none else ("%.0f%%"|format(m.rates.human_review * 100)) }} ·
+  verification-error rate {{ "—" if m.rates.verification_error is none else ("%.0f%%"|format(m.rates.verification_error * 100)) }}.
+  Neither counts as an automatic pass or as explicit defect detection.</p>
+  <table class="small"><thead><tr><th>Job type</th><th>pass</th><th>fail</th><th>needs human</th><th>verification error</th><th>Latency median / p95</th></tr></thead><tbody>
+  {% for t, r in m.by_type.items() %}{% set l = m.latency_s.by_type.get(t, {}) %}
+    <tr><td>{{ t }}</td><td>{{ r.get('pass', 0) }}</td><td>{{ r.get('fail', 0) }}</td><td>{{ r.get('needs_human', 0) }}</td><td>{{ r.get('verification_error', 0) }}</td><td>{{ secs(l.median) }} / {{ secs(l.p95) }} (n={{ l.n or 0 }})</td></tr>
+  {% else %}<tr><td colspan="6" class="muted">No verifications yet.</td></tr>{% endfor %}
+  </tbody></table>
+</div>
+
+<h2>Model spend by purpose</h2>
+<div class="panel">
+  <table class="small"><thead><tr><th>Purpose</th><th>Model</th><th>Calls</th><th>Failed</th><th>Tokens in / out</th><th>Cost</th></tr></thead><tbody>
+  {% for r in m.cost_usd.by_purpose %}<tr><td>{{ r.purpose }}</td><td>{{ r.model }}</td><td>{{ r.calls }}</td><td>{{ r.failed }}</td><td>{{ r.input_tokens }} / {{ r.output_tokens }}</td><td>${{ "%.4f"|format(r.cost_usd) }}</td></tr>
+  {% else %}<tr><td colspan="6" class="muted">No model calls yet.</td></tr>{% endfor %}
+  </tbody></table>
+</div>
+{% endblock %}

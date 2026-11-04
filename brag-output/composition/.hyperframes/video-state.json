@@ -1,0 +1,453 @@
+{
+  "version": 1,
+  "historyId": "a1104733-170b-478f-8dd0-b1e70fcbd1da",
+  "currentRevision": "69f8123f-c249-4452-b259-59186f7c6606",
+  "pendingChanges": false,
+  "files": {
+    "assets/fonts/JetBrainsMono.woff2": {
+      "hash": "18be452724bfdc236c074ca94a249a7f41a86752c7d04ab258ce9ed5651f6a7e",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\18\\18be452724bfdc236c074ca94a249a7f41a86752c7d04ab258ce9ed5651f6a7e"
+    },
+    "assets/fonts/PlusJakartaSans.woff2": {
+      "hash": "1262bff0591c36094d058ab102b84ce34eb1e547e8ff00557bf8d55449e58e40",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\12\\1262bff0591c36094d058ab102b84ce34eb1e547e8ff00557bf8d55449e58e40"
+    },
+    "assets/js/audio-data.js": {
+      "hash": "2eed213a7840614efbf3ef34c3f6c696bda16704f57f27521244efd003cc1d74",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\2e\\2eed213a7840614efbf3ef34c3f6c696bda16704f57f27521244efd003cc1d74"
+    },
+    "assets/js/gsap.min.js": {
+      "hash": "28033e449a31ebcc396e5be8b13b63152bf03094288fb5867034321927bce087",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\28\\28033e449a31ebcc396e5be8b13b63152bf03094288fb5867034321927bce087"
+    },
+    "assets/sfx/casino/card-slide-1.ogg": {
+      "hash": "006cf9822d15d7063f8899e56041f41646df30adb6fbd8b974ee5d5420012690",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\00\\006cf9822d15d7063f8899e56041f41646df30adb6fbd8b974ee5d5420012690"
+    },
+    "assets/sfx/impact/impactBell_heavy_000.ogg": {
+      "hash": "94b8bb5f2d43ab65e4bcc32b28562416e9bc2c51d9fd4be1e333660ee52f977f",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\94\\94b8bb5f2d43ab65e4bcc32b28562416e9bc2c51d9fd4be1e333660ee52f977f"
+    },
+    "assets/sfx/impact/impactSoft_medium_001.ogg": {
+      "hash": "7642a4fd43e547afe4f7adfadb3dabb681c0ff512f52c1674bae30a726841faf",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\76\\7642a4fd43e547afe4f7adfadb3dabb681c0ff512f52c1674bae30a726841faf"
+    },
+    "assets/sfx/interface/bong_001.ogg": {
+      "hash": "d21d0f0b782445db579d11e2506b24cd1ac9d664ee33aeaf807761aa7b6fd710",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\d2\\d21d0f0b782445db579d11e2506b24cd1ac9d664ee33aeaf807761aa7b6fd710"
+    },
+    "assets/sfx/interface/click_003.ogg": {
+      "hash": "2fa929138bc3a0f432696588f66eac94b8f6d463905ec8808c6461ce4b054292",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\2f\\2fa929138bc3a0f432696588f66eac94b8f6d463905ec8808c6461ce4b054292"
+    },
+    "assets/sfx/interface/drop_002.ogg": {
+      "hash": "4ac4d1cef7e936965cbf795852ca2020300b9e2ba7daa59f2bf4f1f7bf416218",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\4a\\4ac4d1cef7e936965cbf795852ca2020300b9e2ba7daa59f2bf4f1f7bf416218"
+    },
+    "assets/sfx/interface/error_006.ogg": {
+      "hash": "a97513d7fd2b12b1210c423be943b4c1ab0e899b11db95855e9b74836e646ae0",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\a9\\a97513d7fd2b12b1210c423be943b4c1ab0e899b11db95855e9b74836e646ae0"
+    },
+    "assets/sfx/keyboard/keypress-001.wav": {
+      "hash": "7b873548c399b9aa0efbe63052fe1344c5317a9b23455b8be3523f47d434daf1",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\7b\\7b873548c399b9aa0efbe63052fe1344c5317a9b23455b8be3523f47d434daf1"
+    },
+    "assets/sfx/keyboard/keypress-003.wav": {
+      "hash": "d67cf9547d99fc65c815c4c68fa9181e0af71419761cbb1d1f0a10eb8491a8d2",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\d6\\d67cf9547d99fc65c815c4c68fa9181e0af71419761cbb1d1f0a10eb8491a8d2"
+    },
+    "assets/sfx/keyboard/keypress-005.wav": {
+      "hash": "619eb7e26571657b76fc9e1e3d99e85c3fc2259fa91c4c45f57384a85774ac24",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\61\\619eb7e26571657b76fc9e1e3d99e85c3fc2259fa91c4c45f57384a85774ac24"
+    },
+    "assets/sfx/keyboard/keypress-007.wav": {
+      "hash": "522834f471e6c2935fd1e6a28042c0864925556efbec32c36d7c7a98026d4bfc",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\52\\522834f471e6c2935fd1e6a28042c0864925556efbec32c36d7c7a98026d4bfc"
+    },
+    "assets/sfx/keyboard/keypress-009.wav": {
+      "hash": "25595c1d1e0e18aada04dce3a651dc2c499f1fbc2647c1ab0b3c4e718275b16b",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\25\\25595c1d1e0e18aada04dce3a651dc2c499f1fbc2647c1ab0b3c4e718275b16b"
+    },
+    "index.html": {
+      "hash": "c4eb0162bcf573bea574d6f57cb3d9a4f74b4bdfc8e354cdeee087ec11ad9b4f",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\c4\\c4eb0162bcf573bea574d6f57cb3d9a4f74b4bdfc8e354cdeee087ec11ad9b4f"
+    },
+    "assets/music/happy-beats-business-moves-vol-12-by-ende-dot-app.mp3": {
+      "hash": "5888d4bd2ba0119b87a94e502ae2cc401c08192945cc5e5c2f8e8a33aa47a0a1",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\58\\5888d4bd2ba0119b87a94e502ae2cc401c08192945cc5e5c2f8e8a33aa47a0a1"
+    },
+    "assets/vo/vo1.wav": {
+      "hash": "ce5f1285254ec0de563986b458d5e3cd076a83a59d6e5a8fa11f19bff23e1755",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\ce\\ce5f1285254ec0de563986b458d5e3cd076a83a59d6e5a8fa11f19bff23e1755"
+    },
+    "assets/vo/vo2.wav": {
+      "hash": "aaac25a869f87d953bcb070a039e40a09305398d707ec3b96ee327c7b6b55d58",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\aa\\aaac25a869f87d953bcb070a039e40a09305398d707ec3b96ee327c7b6b55d58"
+    },
+    "assets/vo/vo3.wav": {
+      "hash": "a1a486d82fe640b12fef4e4ee05dce64346dbd0249a697a5d8a390ef07cb411e",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\a1\\a1a486d82fe640b12fef4e4ee05dce64346dbd0249a697a5d8a390ef07cb411e"
+    },
+    "assets/vo/vo4.wav": {
+      "hash": "2d913292990372aac2edb919ebb31d178aa440362211d6535575eb76c211bbe8",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\2d\\2d913292990372aac2edb919ebb31d178aa440362211d6535575eb76c211bbe8"
+    },
+    "assets/vo/vo5.wav": {
+      "hash": "7445498d45a96f45d53b37aec4262ebe6e42b8dcf23acdec87af125848f78c06",
+      "content": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\74\\7445498d45a96f45d53b37aec4262ebe6e42b8dcf23acdec87af125848f78c06"
+    }
+  },
+  "revisions": {
+    "7f766be5-eed2-4cf2-89df-33a7f54eec57": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793771795910,
+      "endedAt": 1793771795917,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\d2\\d26f7ba4d3e0828114b924fb12ea5b8a4cbe0b97e7ffe19d174f3df89db04948",
+          "after": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\5a\\5ad810f19a833ce307788b131b0114760b126b0ea087d354627a4eab065de8c9"
+        }
+      }
+    },
+    "4f343548-de3c-4127-9e28-0164c7b3995b": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793771844524,
+      "endedAt": 1793771844527,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\5a\\5ad810f19a833ce307788b131b0114760b126b0ea087d354627a4eab065de8c9",
+          "after": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\b3\\b37bae3af636b8133b83ce462f43fc3e002217f6b39c2fbacf4f0bd827433316"
+        }
+      }
+    },
+    "03b9e8ea-9ad1-49b5-bedd-fa173258be05": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793771885745,
+      "endedAt": 1793771885750,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\b3\\b37bae3af636b8133b83ce462f43fc3e002217f6b39c2fbacf4f0bd827433316",
+          "after": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\bf\\bffb98a09692e8452c87823ca8cb861dd48d500bd7e0ce05189d2d3e316577e1"
+        }
+      }
+    },
+    "a51985c5-e200-4e27-912b-f76cb12f6930": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793773523617,
+      "endedAt": 1793773523818,
+      "files": {
+        "assets/vo/vo1.wav": {
+          "before": null,
+          "after": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\ce\\ce5f1285254ec0de563986b458d5e3cd076a83a59d6e5a8fa11f19bff23e1755"
+        },
+        "assets/vo/vo2.wav": {
+          "before": null,
+          "after": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\aa\\aaac25a869f87d953bcb070a039e40a09305398d707ec3b96ee327c7b6b55d58"
+        },
+        "assets/vo/vo3.wav": {
+          "before": null,
+          "after": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\a1\\a1a486d82fe640b12fef4e4ee05dce64346dbd0249a697a5d8a390ef07cb411e"
+        },
+        "assets/vo/vo4.wav": {
+          "before": null,
+          "after": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\2d\\2d913292990372aac2edb919ebb31d178aa440362211d6535575eb76c211bbe8"
+        },
+        "assets/vo/vo5.wav": {
+          "before": null,
+          "after": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\74\\7445498d45a96f45d53b37aec4262ebe6e42b8dcf23acdec87af125848f78c06"
+        },
+        "index.html": {
+          "before": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\bf\\bffb98a09692e8452c87823ca8cb861dd48d500bd7e0ce05189d2d3e316577e1",
+          "after": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\c5\\c578af677782ace6bd531d9cce2f116425143b1e18d66858d43bd5878a5beed4"
+        }
+      }
+    },
+    "69f8123f-c249-4452-b259-59186f7c6606": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1793773560950,
+      "endedAt": 1793773561262,
+      "files": {
+        "assets/js/audio-data.js": {
+          "before": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\84\\846c545f5ee5870be4c981a26241f5210c0879b3c9c7cd2961df065390ccaecf",
+          "after": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\2e\\2eed213a7840614efbf3ef34c3f6c696bda16704f57f27521244efd003cc1d74"
+        },
+        "index.html": {
+          "before": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\c5\\c578af677782ace6bd531d9cce2f116425143b1e18d66858d43bd5878a5beed4",
+          "after": "C:\\Users\\Naren\\.cache\\hyperframes\\history\\a1104733-170b-478f-8dd0-b1e70fcbd1da\\blobs\\c4\\c4eb0162bcf573bea574d6f57cb3d9a4f74b4bdfc8e354cdeee087ec11ad9b4f"
+        }
+      }
+    }
+  },
+  "checks": {
+    "latest": {
+      "revision": "69f8123f-c249-4452-b259-59186f7c6606",
+      "id": "5fd0daa1-eed6-4377-b915-6b665cfb4c70"
+    },
+    "revisions": {
+      "7f766be5-eed2-4cf2-89df-33a7f54eec57": [
+        {
+          "id": "58fde60f-7cd6-42e5-aabd-53f09ad041ad",
+          "scope": "project",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 45000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1793771809502,
+          "contentHash": "1ac8733100c5132ffecd5d602c59df73a39dc082359b0a93ab21fb8d90c0d697",
+          "revision": "7f766be5-eed2-4cf2-89df-33a7f54eec57",
+          "inputFingerprint": "9024455859992934cd2c51fa6a782ab3f9ada27b2aa7d3835ed6c032b6c05897",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "dc440ebc-8e7d-4a99-84f9-fe4a90f1ee2b"
+        }
+      ],
+      "a51985c5-e200-4e27-912b-f76cb12f6930": [
+        {
+          "id": "6022ef67-f7fb-4d7c-8426-5a69e6a8b577",
+          "scope": "project",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 45000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1793773537380,
+          "contentHash": "6b8c5aecbd2a7d14ee250590a6cefe5bfca02412dfb47f278c6effccd5a5a161",
+          "revision": "a51985c5-e200-4e27-912b-f76cb12f6930",
+          "inputFingerprint": "32cb3886461da437c214447439580d1aee0ceb6621da77c5b52341d1dea5b71e",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "8e327f0d-847a-4d53-9302-2d0eaa5333c7"
+        }
+      ],
+      "69f8123f-c249-4452-b259-59186f7c6606": [
+        {
+          "id": "5fd0daa1-eed6-4377-b915-6b665cfb4c70",
+          "scope": "project",
+          "report": "C:\\Naren\\Code\\Meta_Ai\\Meta_hack_project\\brag-output\\composition\\.hyperframes\\artifacts\\checks\\5fd0daa1-eed6-4377-b915-6b665cfb4c70.json",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 45000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1793773572674,
+          "contentHash": "445f7aced82fe51a1901b35333890237b36e389cc1ba87465acb9a7ee2852f89",
+          "revision": "69f8123f-c249-4452-b259-59186f7c6606",
+          "inputFingerprint": "0c478c2ed673108e39a13ccff48913de312cc7d8afd8077febc69a0d6a92a9ca",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": [
+      {
+        "id": "ef3a3311-6e17-4fcf-99b7-cea02823d757",
+        "scope": "project",
+        "report": "C:\\Naren\\Code\\Meta_Ai\\Meta_hack_project\\brag-output\\composition\\.hyperframes\\artifacts\\checks\\ef3a3311-6e17-4fcf-99b7-cea02823d757.json",
+        "metadata": {
+          "ok": true,
+          "browserSkipped": false,
+          "options": {
+            "samples": 9,
+            "atTransitions": false,
+            "maxIssues": 80,
+            "collapseStatic": true,
+            "tolerance": 2,
+            "timeout": 45000,
+            "contrast": true,
+            "strict": false,
+            "snapshots": false,
+            "browserGpuMode": "auto"
+          }
+        },
+        "createdAt": 1793771757938,
+        "contentHash": "131f1d241dd8aee8553e9cf59ec4baaa1061e4c1420ff737c1993f44768a4f8f",
+        "revision": null,
+        "inputFingerprint": "5a574c65082706bbc7f5df8c2e7801be6b50023faaa80ebb91af029f0cea3166",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      }
+    ]
+  },
+  "snapshots": {
+    "latest": {
+      "revision": "69f8123f-c249-4452-b259-59186f7c6606",
+      "id": "f2ed61f1-b53d-48f9-a62a-b098bda88ca7-4"
+    },
+    "revisions": {
+      "4f343548-de3c-4127-9e28-0164c7b3995b": [],
+      "69f8123f-c249-4452-b259-59186f7c6606": [
+        {
+          "scope": "full",
+          "id": "f2ed61f1-b53d-48f9-a62a-b098bda88ca7-0",
+          "image": "C:\\Naren\\Code\\Meta_Ai\\Meta_hack_project\\brag-output\\snaps\\frame-00-at-1.9s.png",
+          "time": 1.9,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1793773592824,
+          "contentHash": "d3c01f5d02c88c541e96fab72d03178130ba999b3fcf08a5bb03e4358d58e6fc",
+          "revision": "69f8123f-c249-4452-b259-59186f7c6606",
+          "inputFingerprint": "0c478c2ed673108e39a13ccff48913de312cc7d8afd8077febc69a0d6a92a9ca",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "f2ed61f1-b53d-48f9-a62a-b098bda88ca7-1",
+          "image": "C:\\Naren\\Code\\Meta_Ai\\Meta_hack_project\\brag-output\\snaps\\frame-01-at-8.5s.png",
+          "time": 8.5,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1793773592825,
+          "contentHash": "dd70db8654f69d7c03edf2287eafd5fe685e65d7216ce50e48323532efcd4142",
+          "revision": "69f8123f-c249-4452-b259-59186f7c6606",
+          "inputFingerprint": "0c478c2ed673108e39a13ccff48913de312cc7d8afd8077febc69a0d6a92a9ca",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "f2ed61f1-b53d-48f9-a62a-b098bda88ca7-2",
+          "image": "C:\\Naren\\Code\\Meta_Ai\\Meta_hack_project\\brag-output\\snaps\\frame-02-at-15.2s.png",
+          "time": 15.2,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1793773592825,
+          "contentHash": "2df5919abc09f98b1bce5dde85aa7a516645b11c606d04f32a7f4b98c84cd828",
+          "revision": "69f8123f-c249-4452-b259-59186f7c6606",
+          "inputFingerprint": "0c478c2ed673108e39a13ccff48913de312cc7d8afd8077febc69a0d6a92a9ca",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "f2ed61f1-b53d-48f9-a62a-b098bda88ca7-3",
+          "image": "C:\\Naren\\Code\\Meta_Ai\\Meta_hack_project\\brag-output\\snaps\\frame-03-at-19.8s.png",
+          "time": 19.8,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1793773592826,
+          "contentHash": "421c8363d12843f559dd427b37539e5503525496aeb41ec8cc1343979bf8f50b",
+          "revision": "69f8123f-c249-4452-b259-59186f7c6606",
+          "inputFingerprint": "0c478c2ed673108e39a13ccff48913de312cc7d8afd8077febc69a0d6a92a9ca",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "f2ed61f1-b53d-48f9-a62a-b098bda88ca7-4",
+          "image": "C:\\Naren\\Code\\Meta_Ai\\Meta_hack_project\\brag-output\\snaps\\frame-04-at-23.5s.png",
+          "time": 23.5,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1793773592826,
+          "contentHash": "6713517c8988abd55963b83a06ea18ee286847f16dc8c373d559bbb82b44aa34",
+          "revision": "69f8123f-c249-4452-b259-59186f7c6606",
+          "inputFingerprint": "0c478c2ed673108e39a13ccff48913de312cc7d8afd8077febc69a0d6a92a9ca",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": []
+  },
+  "renders": {
+    "latest": {
+      "id": "8e327f0d-847a-4d53-9302-2d0eaa5333c7",
+      "completedAt": 1793773697060,
+      "output": "C:\\Naren\\Code\\Meta_Ai\\Meta_hack_project\\brag-output\\brag.mp4",
+      "status": "completed",
+      "revision": "69f8123f-c249-4452-b259-59186f7c6606"
+    },
+    "retainedRevisions": [
+      "69f8123f-c249-4452-b259-59186f7c6606",
+      "03b9e8ea-9ad1-49b5-bedd-fa173258be05"
+    ]
+  },
+  "pendingArtifactCleanup": []
+}

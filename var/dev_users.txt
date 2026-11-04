@@ -1,0 +1,4 @@
+# Local demo logins (generated; do not commit). Re-run seed-dev to rotate.
+care.lead	care_lead	YXaTkoNrm7gY8Rc1
+builder.one	builder	MDhc9jO5xKH47AmX
+builder.two	builder	qPa6xVqSm4CROXJO
